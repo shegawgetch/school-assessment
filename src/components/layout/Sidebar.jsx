@@ -1,4 +1,4 @@
-import { DocumentArrowUpIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { UserGroupIcon, HomeIcon,PlusIcon } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -12,7 +12,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     <>
       {/* Overlay on small screens */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-30 z-30 md:hidden ${isOpen ? "block" : "hidden"}`}
+        className={`fixed inset-0 bg-black/50 bg-opacity-30 z-30 md:hidden ${isOpen ? "block" : "hidden"}`}
         onClick={() => setIsOpen(false)}
       ></div>
 
@@ -33,12 +33,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               Dashboard
             </Link>
             <Link
-              to="/candidate-upload"
+              to="/manage-candidate"
               onClick={handleLinkClick}
               className="flex items-center py-2 px-4 rounded hover:bg-slate-700"
             >
-              <DocumentArrowUpIcon className="h-6 w-6 text-white mr-2" />
-              Candidate Upload
+             <UserGroupIcon className="h-6 w-6 text-white mr-2" />
+              Candidates
             </Link>
           </nav>
         </div>

@@ -6,6 +6,8 @@ import Dashboard from "./components/layout/Dashboard";
 import Footer from "./components/layout/Footer";
 import { Routes, Route } from 'react-router-dom';
 import AdminCandidateUpload from './components/pages/AdminCandidateUpload';
+import CandidateFormDynamic from './components/pages/CandidateFormDynamic';
+import CandidateManager from './components/pages/CandidateManager';
 
 
 function App() {
@@ -23,8 +25,10 @@ function App() {
         <main className="flex-1 overflow-y-auto p-4">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/candidate-upload" element={<AdminCandidateUpload />} />
+            <Route path="/manage-candidate" element={<CandidateManager />} />
             <Route path="/" element={<Dashboard />} />
+            <Route path="/add-candidates" element={<CandidateFormDynamic />} />
+
 
           </Routes>
         </main>
