@@ -1,4 +1,4 @@
-import { useState } from "react"; 
+import { useState, useRef } from "react";
 import axios from "axios";
 
 const isValidEmail = (email) =>
@@ -9,6 +9,7 @@ const CandidateFormDynamic = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const inputRefs = useRef([]);
 
   const handleEmailChange = (index, value) => {
     const updated = [...emails];
@@ -25,14 +26,17 @@ const CandidateFormDynamic = () => {
 
   const validateEmails = () => {
     const trimmed = emails.map((e) => e.trim());
-    if (trimmed.some((e) => !e)) {
-      setError("Please fill in all email fields.");
-      return false;
-    }
+    const errors = [];
 
-    const invalids = trimmed.filter((e) => !isValidEmail(e));
-    if (invalids.length) {
-      setError(`Invalid email(s): ${invalids.join(", ")}`);
+    trimmed.forEach((e, i) => {
+      if (!e) errors.push(i);
+      else if (!isValidEmail(e)) errors.push(i);
+    });
+
+    if (errors.length > 0) {
+      setError("Please fix the highlighted email(s).");
+      // focus first invalid field
+      if (inputRefs.current[errors[0]]) inputRefs.current[errors[0]].focus();
       return false;
     }
 
@@ -53,7 +57,6 @@ const CandidateFormDynamic = () => {
     if (!validateEmails()) return;
 
     setLoading(true);
-
     try {
       const trimmedEmails = emails.map((e) => e.trim());
       const payload =
@@ -82,24 +85,29 @@ const CandidateFormDynamic = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md mx-auto p-6 bg-white shadow rounded space-y-6"
+      className="max-w-md mx-auto p-6  bg-white shadow rounded space-y-2"
     >
-      <h2 className="text-xl font-semibold mb-4">Add Candidate Emails</h2>
+      <h6 className="text-xl font-semibold mb-4">Add Candidate Emails</h6>
 
       {emails.map((email, i) => {
-        const isInvalid = email.trim() && !isValidEmail(email);
+        const trimmed = email.trim();
+        const isEmpty = !trimmed;
+        const isInvalid = trimmed && !isValidEmail(trimmed);
+        const showError = error && (isEmpty || isInvalid);
+
         return (
           <div key={i} className="flex items-center gap-2">
             <input
+              ref={(el) => (inputRefs.current[i] = el)}
               type="email"
               value={email}
               onChange={(e) => handleEmailChange(i, e.target.value)}
               placeholder="user@gmail.com"
               className={`flex-grow px-3 py-2 border rounded-lg transition focus:outline-none
                 ${
-                  isInvalid
+                  showError
                     ? "border-red-500 focus:border-red-500 focus:ring-transparent"
-                    : "border-gray-300 focus:border-gray-300 focus:ring-transparent"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
                 }`}
               disabled={loading}
             />
@@ -128,13 +136,13 @@ const CandidateFormDynamic = () => {
       </button>
 
       {error && (
-        <p className="text-red-600 font-medium" role="alert">
+        <p className="text-red-600 font-medium mt-2" role="alert">
           {error}
         </p>
       )}
 
       {success && (
-        <p className="text-green-600 font-medium" role="status">
+        <p className="text-green-600 font-medium mt-2" role="status">
           {success}
         </p>
       )}
