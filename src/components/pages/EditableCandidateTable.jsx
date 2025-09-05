@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { validateCandidates } from "../../utils/validateCandidates";
+import { toast } from "react-toastify";
 
 const EditableCandidateTable = ({ candidates, setCandidates, onSubmit }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [isSaving, setIsSaving] = useState(false);
   const inputRefs = useRef([]);
 
   // Dynamically calculate rows per page based on screen height
@@ -12,10 +14,12 @@ const EditableCandidateTable = ({ candidates, setCandidates, onSubmit }) => {
     const calculateRows = () => {
       const headerHeight = 250;
       const rowHeight = 50;
-      const rows = Math.max(3, Math.floor((window.innerHeight - headerHeight) / rowHeight));
+      const rows = Math.max(
+        3,
+        Math.floor((window.innerHeight - headerHeight) / rowHeight)
+      );
       setRowsPerPage(rows);
     };
-
     calculateRows();
     window.addEventListener("resize", calculateRows);
     return () => window.removeEventListener("resize", calculateRows);
@@ -37,7 +41,7 @@ const EditableCandidateTable = ({ candidates, setCandidates, onSubmit }) => {
     setCandidates(updated);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validationErrors = validateCandidates(candidates);
 
     const updatedData = candidates.map((c, index) => {
@@ -49,13 +53,31 @@ const EditableCandidateTable = ({ candidates, setCandidates, onSubmit }) => {
 
     if (validationErrors.length > 0) {
       const firstInvalidIndex = updatedData.findIndex((c) => c.error);
-      if (inputRefs.current[firstInvalidIndex]) {
+      if (inputRefs.current[firstInvalidIndex])
         inputRefs.current[firstInvalidIndex].focus();
-      }
-      return; // stop submission
+      toast.error("Please fix validation errors before saving.");
+      return;
     }
 
-    onSubmit(candidates);
+    setIsSaving(true); // start loading
+    const savingToast = toast.info("Saving candidate(s)...", { autoClose: false });
+
+    try {
+      await onSubmit(candidates);
+      toast.update(savingToast, {
+        render: "✅ Candidates saved successfully!",
+        type: toast.TYPE.SUCCESS,
+        autoClose: 3000,
+      });
+    } catch (err) {
+      toast.update(savingToast, {
+        render: "Failed to save candidates.",
+        type: toast.TYPE.ERROR,
+        autoClose: 3000,
+      });
+    } finally {
+      setIsSaving(false); // stop loading
+    }
   };
 
   return (
@@ -78,10 +100,10 @@ const EditableCandidateTable = ({ candidates, setCandidates, onSubmit }) => {
                   type="email"
                   value={candidate.email}
                   onChange={(e) => handleChange(index, e.target.value)}
-                  className={`w-full border rounded px-2 py-1 ${
+                  className={`w-full border rounded px-2 py-1 focus:outline-none ${
                     candidate.error
-                      ? "border-red-500 focus:border-red-500"
-                      : "border-gray-300 focus:border-blue-500"
+                      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                      : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   }`}
                 />
                 {candidate.error && (
@@ -122,12 +144,15 @@ const EditableCandidateTable = ({ candidates, setCandidates, onSubmit }) => {
         </button>
       </div>
 
-      {/* Submit */}
+      {/* Save Candidate(s) Button */}
       <button
         onClick={handleSubmit}
-        className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+        disabled={isSaving}
+        className={`mt-4 px-4 py-2 rounded text-white transition ${
+          isSaving ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+        }`}
       >
-        Submit
+        {isSaving ? "Saving..." : "Save Candidates"}
       </button>
     </div>
   );

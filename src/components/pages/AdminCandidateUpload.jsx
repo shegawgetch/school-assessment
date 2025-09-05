@@ -2,21 +2,24 @@ import React, { useState } from "react";
 import UploadForm from "./UploadForm";
 import EditableCandidateTable from "./EditableCandidateTable";
 import { parseCandidateFile } from "../../utils/fileParser";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminCandidateUpload = () => {
   const [file, setFile] = useState(null);
   const [candidates, setCandidates] = useState([]);
   const [assessmentName, setAssessmentName] = useState("");
+  const [isParsing, setIsParsing] = useState(false); // NEW
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
-    if (!file) return alert("Please select a file.");
-    if (!assessmentName) return alert("Please select an assessment.");
+    if (!file) return toast.error("Please select a file.");
+    if (!assessmentName) return toast.error("Please select an assessment.");
 
+    setIsParsing(true); // disable button while parsing
     try {
       const rawData = await parseCandidateFile(file);
-
-      // Normalize keys to lowercase and add empty error field
       const normalizedData = rawData.map((row) => {
         const normalizedRow = {};
         for (const key in row) {
@@ -24,21 +27,25 @@ const AdminCandidateUpload = () => {
         }
         return { email: normalizedRow.email || "", error: "" };
       });
-
       setCandidates(normalizedData);
+      toast.success("File parsed successfully!");
     } catch (err) {
-      alert("Error: " + err);
+      toast.error("Error parsing file.");
+    } finally {
+      setIsParsing(false); // re-enable button
     }
   };
 
-  // Callback when table submit succeeds
-  const handleTableSubmit = (validCandidates) => {
-    console.log("Final Data:", { assessmentName, candidates: validCandidates });
-    alert("Candidates linked to assessment successfully!");
-    // Optional: clear state
-    // setCandidates([]);
-    // setFile(null);
-    // setAssessmentName("");
+  const handleSave = async (validCandidates) => {
+    await axios.post("/api/candidates/bulk", {
+      assessmentName,
+      candidates: validCandidates,
+    });
+
+    // Reset form
+    setFile(null);
+    setCandidates([]);
+    setAssessmentName("");
   };
 
   return (
@@ -67,9 +74,12 @@ const AdminCandidateUpload = () => {
 
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition w-full sm:w-auto"
+          disabled={isParsing} // DISABLE while parsing
+          className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition w-full sm:w-auto ${
+            isParsing ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          Upload
+          {isParsing ? "Parsing..." : "Upload"}
         </button>
       </form>
 
@@ -79,10 +89,13 @@ const AdminCandidateUpload = () => {
           <EditableCandidateTable
             candidates={candidates}
             setCandidates={setCandidates}
-            onSubmit={handleTableSubmit}
+            onSubmit={handleSave} // Only called on Save button click
           />
         </div>
       )}
+
+      {/* Toast notifications */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
   );
 };
