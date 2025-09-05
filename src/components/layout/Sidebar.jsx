@@ -1,4 +1,4 @@
-import { UserGroupIcon, HomeIcon,PlusIcon } from '@heroicons/react/24/solid';
+import { UserGroupIcon,EnvelopeIcon, HomeIcon,PlusIcon } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -40,6 +40,15 @@ export default function Sidebar({ isOpen, setIsOpen }) {
              <UserGroupIcon className="h-6 w-6 text-white mr-2" />
               Candidates
             </Link>
+            <Link
+             to="/manage-invitations"
+             onClick={handleLinkClick}
+             className="flex items-center py-2 px-4 rounded hover:bg-slate-700"
+          >
+           <EnvelopeIcon className="h-6 w-6 text-white mr-2" />
+          Invitations
+         </Link>
+           
           </nav>
         </div>
       </div>

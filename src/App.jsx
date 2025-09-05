@@ -8,6 +8,7 @@ import { Routes, Route } from 'react-router-dom';
 import AdminCandidateUpload from './components/pages/AdminCandidateUpload';
 import CandidateFormDynamic from './components/pages/CandidateFormDynamic';
 import CandidateManager from './components/pages/CandidateManager';
+import AdminInvitationPage from './components/pages/AdminInvitationPage';
 
 
 function App() {
@@ -28,6 +29,8 @@ function App() {
             <Route path="/manage-candidate" element={<CandidateManager />} />
             <Route path="/" element={<Dashboard />} />
             <Route path="/add-candidates" element={<CandidateFormDynamic />} />
+            <Route path="/manage-invitations" element={<AdminInvitationPage />} />
+
 
 
           </Routes>
