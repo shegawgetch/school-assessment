@@ -22,126 +22,117 @@ const SummaryCard = ({ title, count, total, color }) => {
 };
 
 const AdminInvitationPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [loadingFetch, setLoadingFetch] = useState(false);
+  const [loadingGenerate, setLoadingGenerate] = useState(false);
   const [invites, setInvites] = useState([]);
-  const [candidates, setCandidates] = useState([]);
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(6);
-  const [selectedCandidates, setSelectedCandidates] = useState([]);
+  const [selectedInvites, setSelectedInvites] = useState([]);
+  const [summary, setSummary] = useState({
+    total: 0,
+    pending: 0,
+    accepted: 0,
+    completed: 0,
+    expired: 0,
+  });
 
   // Fetch invitations
-  const fetchInvites = async () => {
+  const fetchInvites = async (status = "all") => {
     try {
-      setLoading(true);
-      const res = await axios.get("/api/invitations");
-      setInvites(Array.isArray(res.data) ? res.data : []);
+      setLoadingFetch(true);
+      const res = await axios.get("http://localhost:8083/invitations", {
+        params: { status },
+      });
+      const data = Array.isArray(res.data.invitations) ? res.data.invitations : [];
+      setInvites(data);
+
+      if (res.data.summary) {
+        setSummary(res.data.summary);
+      } else {
+        const total = data.length;
+        setSummary({
+          total,
+          pending: data.filter(i => i.status === "pending").length,
+          accepted: data.filter(i => i.status === "accepted").length,
+          completed: data.filter(i => i.status === "completed").length,
+          expired: data.filter(i => i.status === "expired").length,
+        });
+      }
     } catch (err) {
       toast.error("Failed to fetch invitations.");
       console.error(err);
     } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch candidates
-  const fetchCandidates = async () => {
-    try {
-      const res = await axios.get("/api/candidates");
-      setCandidates(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      toast.error("Failed to fetch candidates.");
-      console.error(err);
+      setLoadingFetch(false);
     }
   };
 
   useEffect(() => {
-    fetchInvites();
-    fetchCandidates();
+    fetchInvites(); // ✅ Only fetch on load
   }, []);
 
-  // Dynamic perPage based on viewport height
-  const calculatePerPage = () => {
-    const viewportHeight = window.innerHeight;
-    const reservedHeight = 350;
-    const cardHeight = 140;
-    const cardsPerPage = Math.floor((viewportHeight - reservedHeight) / cardHeight);
-    setPerPage(cardsPerPage > 0 ? cardsPerPage : 1);
+  // Pagination
+  const totalPages = Math.ceil(invites.length / perPage);
+  const paginatedInvites = invites.slice(
+    (currentPage - 1) * perPage,
+    currentPage * perPage
+  );
+
+  const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
   };
 
-  useEffect(() => {
-    calculatePerPage();
-    window.addEventListener("resize", calculatePerPage);
-    return () => window.removeEventListener("resize", calculatePerPage);
-  }, []);
+  const handleFilterChange = (status) => {
+    setFilter(status);
+    setCurrentPage(1);
+    fetchInvites(status);
+  };
 
-  // Generate & Send Invitations (email + SMS)
+  // Generate invitations ONLY on button click
   const generateInvites = async () => {
-    if (!candidates || candidates.length === 0) {
-      return toast.warn("No candidates available!");
-    }
     try {
-      setLoading(true);
-      // Send bulk invitation request to backend
-      const res = await axios.post("/api/invitations/bulk", { candidates });
-      const createdInvites = Array.isArray(res.data) ? res.data : [];
-
+      setLoadingGenerate(true);
+      const res = await axios.post("http://localhost:8083/invitations/bulk");
+      const createdInvites = Array.isArray(res.data.invitations)
+        ? res.data.invitations
+        : [];
       setInvites(createdInvites);
-
-      // Automatically send SMS if phone exists
-      for (let invite of createdInvites) {
-        if (invite.phone) {
-          try {
-            await axios.post(`/api/invitations/${invite.id}/send-sms`, { phone: invite.phone });
-          } catch (err) {
-            console.error(`SMS failed for ${invite.email}`);
-          }
-        }
-      }
-
-      toast.success(`Invitations sent (email + SMS) to ${createdInvites.length} candidates!`);
+      if (res.data.summary) setSummary(res.data.summary);
+      toast.success(`Invitations processed for ${createdInvites.length} candidates!`);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to send invitations.");
+      toast.error(err.response?.data?.message || "Failed to process invitations.");
     } finally {
-      setLoading(false);
+      setLoadingGenerate(false);
     }
   };
 
-  // Resend Invitations (selected candidates)
   const resendInvites = async () => {
-    if (selectedCandidates.length === 0) {
-      return toast.warn("Select at least one candidate to resend!");
-    }
+    if (selectedInvites.length === 0)
+      return toast.warn("Select at least one invitation to resend!");
     try {
-      setLoading(true);
-      for (let inviteId of selectedCandidates) {
-        await axios.post(`/api/invitations/${inviteId}/resend`);
-      }
+      await axios.post("http://localhost:8083/invitations/bulk/resend", {
+        invitationIds: selectedInvites,
+      });
       toast.success("Selected invitations resent!");
-      fetchInvites();
-      setSelectedCandidates([]);
-    } catch (err) {
+      fetchInvites(filter);
+      setSelectedInvites([]);
+    } catch {
       toast.error("Failed to resend invitations.");
-    } finally {
-      setLoading(false);
     }
   };
 
-  // Send Reminder (selected candidates)
   const sendReminders = async () => {
-    if (selectedCandidates.length === 0) {
-      return toast.warn("Select at least one candidate to send reminder!");
-    }
+    if (selectedInvites.length === 0)
+      return toast.warn("Select at least one invitation to remind!");
     try {
-      setLoading(true);
-      for (let inviteId of selectedCandidates) {
-        await axios.post(`/api/invitations/${inviteId}/reminder`);
-      }
+      await axios.post("http://localhost:8083/invitations/bulk/reminder", {
+        invitationIds: selectedInvites,
+      });
       toast.success("Reminders sent!");
-    } catch (err) {
+      setSelectedInvites([]);
+    } catch {
       toast.error("Failed to send reminders.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -154,68 +145,35 @@ const AdminInvitationPage = () => {
     }
   };
 
-  const isExpired = (expiresAt) => expiresAt && new Date(expiresAt) < new Date();
-
-  // Filter invitations
-  const filteredInvites = Array.isArray(invites)
-    ? invites.filter((invite) => {
-        if (filter === "all") return true;
-        if (filter === "expired") return isExpired(invite.expiresAt);
-        return invite.status === filter && !isExpired(invite.expiresAt);
-      })
-    : [];
-
-  // Pagination
-  const totalPages = Math.ceil(filteredInvites.length / perPage);
-  const paginatedInvites = filteredInvites.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
-
-  const goToPage = (page) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-  };
-
-  // Summary
-  const summary = {
-    total: invites.length,
-    pending: invites.filter((i) => i.status === "pending" && !isExpired(i.expiresAt)).length,
-    accepted: invites.filter((i) => i.status === "accepted" && !isExpired(i.expiresAt)).length,
-    completed: invites.filter((i) => i.status === "completed" && !isExpired(i.expiresAt)).length,
-    expired: invites.filter((i) => isExpired(i.expiresAt)).length,
-  };
-
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <h2 className="text-2xl font-semibold text-center md:text-left">
           Invitation Management
         </h2>
         <button
-          onClick={generateInvites}
-          disabled={loading}
+          onClick={generateInvites} // ✅ Only button triggers generation
+          disabled={loadingGenerate}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          {loading ? "Sending Invitations..." : "Generate & Send Invitations"}
+          {loadingGenerate ? "Processing..." : "Generate Invitations"}
         </button>
       </div>
 
-      {/* Bulk action buttons */}
+      {/* Bulk actions */}
       <div className="flex gap-2 justify-center">
         <button
           onClick={resendInvites}
-          disabled={selectedCandidates.length === 0 || loading}
+          disabled={selectedInvites.length === 0}
           className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           Resend Selected
         </button>
         <button
           onClick={sendReminders}
-          disabled={selectedCandidates.length === 0 || loading}
+          disabled={selectedInvites.length === 0}
           className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           Send Reminder Selected
@@ -233,47 +191,54 @@ const AdminInvitationPage = () => {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2 justify-center">
-        {["all", "pending", "accepted", "completed", "expired"].map((f) => (
+        {["all", "pending", "accepted", "completed", "expired"].map((status) => (
           <button
-            key={f}
-            onClick={() => { setFilter(f); setCurrentPage(1); }}
+            key={status}
+            onClick={() => handleFilterChange(status)}
             className={`px-3 py-1 rounded ${
-              filter === f ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            } transition-colors`}
+              filter === status ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
         ))}
       </div>
 
       {/* Invitations List */}
       {paginatedInvites.length === 0 ? (
-        <p className="text-center">No invitations found for the selected filter.</p>
+        <p className="text-center">No invitations found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center">
           {paginatedInvites.map((invite) => {
             let statusColor;
             switch (invite.status) {
-              case "pending": statusColor = "text-yellow-500"; break;
-              case "accepted": statusColor = "text-blue-500"; break;
-              case "completed": statusColor = "text-green-600"; break;
+              case "pending":
+                statusColor = "text-yellow-500";
+                break;
+              case "accepted":
+                statusColor = "text-blue-500";
+                break;
+              case "completed":
+                statusColor = "text-green-600";
+                break;
               case "expired":
-              default: statusColor = "text-red-500"; break;
+              default:
+                statusColor = "text-red-500";
+                break;
             }
-
             return (
               <div key={invite.id} className="p-4 flex flex-col gap-3 w-full md:w-80 border rounded-md">
                 <div className="flex items-center justify-between">
                   <input
                     type="checkbox"
-                    checked={selectedCandidates.includes(invite.id)}
+                    checked={selectedInvites.includes(invite.id)}
                     onChange={(e) => {
-                      if (e.target.checked) setSelectedCandidates([...selectedCandidates, invite.id]);
-                      else setSelectedCandidates(selectedCandidates.filter(id => id !== invite.id));
+                      if (e.target.checked) setSelectedInvites([...selectedInvites, invite.id]);
+                      else setSelectedInvites(selectedInvites.filter(id => id !== invite.id));
                     }}
                   />
                   <span className={`text-sm font-medium ${statusColor}`}>
-                    Status: {isExpired(invite.expiresAt) ? "Expired ❌" : invite.status.charAt(0).toUpperCase() + invite.status.slice(1)}
+                    Status: {invite.status.charAt(0).toUpperCase() + invite.status.slice(1)}
                   </span>
                 </div>
                 <p className="text-sm text-gray-700 break-all text-center">
@@ -299,11 +264,31 @@ const AdminInvitationPage = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-4 flex-wrap">
-          <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-300">Prev</button>
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-300"
+          >
+            Prev
+          </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button key={page} onClick={() => goToPage(page)} className={`px-3 py-1 rounded ${currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}>{page}</button>
+            <button
+              key={page}
+              onClick={() => goToPage(page)}
+              className={`px-3 py-1 rounded ${
+                currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {page}
+            </button>
           ))}
-          <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-300">Next</button>
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-300"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>
