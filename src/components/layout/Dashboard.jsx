@@ -20,6 +20,7 @@ import axios from "axios";
 export default function Dashboard() {
   const [showManualModal, setShowManualModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
   const [invites, setInvites] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,6 +29,7 @@ export default function Dashboard() {
 
   const manualModalRef = useRef(null);
   const uploadModalRef = useRef(null);
+  const analyticsModalRef = useRef(null);
 
   const handleOverlayClick = (e, modalRef, closeFn) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -254,7 +256,10 @@ export default function Dashboard() {
               >
                 Upload Bulk Candidates
               </button>
-              <button className="bg-gray-200 bg-opacity-50 text-gray-800 px-3 py-2 rounded-lg shadow hover:bg-gray-300 transition flex items-center justify-center gap-1 font-medium">
+              <button
+                onClick={() => setShowAnalyticsModal(true)}
+                className="bg-gray-200 bg-opacity-50 text-gray-800 px-3 py-2 rounded-lg shadow hover:bg-gray-300 transition flex items-center justify-center gap-1 font-medium"
+              >
                 View Analytics
               </button>
             </div>
@@ -315,6 +320,35 @@ export default function Dashboard() {
             </div>
             <div className="p-0 overflow-auto flex-grow">
               <AdminCandidateUpload />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Analytics Modal */}
+      {showAnalyticsModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40"
+          onClick={(e) => handleOverlayClick(e, analyticsModalRef, setShowAnalyticsModal)}
+        >
+          <div
+            ref={analyticsModalRef}
+            className="relative w-full max-w-3xl mt-16 mb-16 bg-white rounded-lg shadow-lg flex flex-col max-h-[calc(100vh-64px)]"
+          >
+            <div className="flex justify-end p-2 border-b border-gray-200 flex-shrink-0">
+           {/* Centered Text */}
+         <h6 className="absolute left-1/2 transform -translate-x-1/2 font-bold text-gray-700">
+         Invitation Analytics
+         </h6>
+           <button
+                onClick={() => setShowAnalyticsModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="p-4 overflow-auto flex-grow">
+              <DashboardAnalytics />
             </div>
           </div>
         </div>

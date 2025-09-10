@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react"; 
 import axios from "axios";
 import CandidateFormDynamic from "./CandidateFormDynamic";
 import AdminCandidateUpload from "./AdminCandidateUpload";
@@ -18,6 +18,7 @@ import {
   CheckIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  XMarkIcon, // close icon
 } from "@heroicons/react/24/solid";
 
 const CandidateManager = () => {
@@ -385,7 +386,7 @@ const CandidateManager = () => {
               }
               className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white"
             >
-              {[10, 20,50,100].map((size) => (
+              {[10, 20, 50, 100].map((size) => (
                 <option key={size} value={size}>
                   {size} per page
                 </option>
@@ -439,8 +440,54 @@ const CandidateManager = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      {/* Manual, Bulk, and View modals remain unchanged from your original code */}
+            {/* Modals */}
+      {showManualModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40"
+          onClick={(e) => handleManualOverlayClick(e, manualModalRef, setShowManualModal)}
+        >
+          <div
+            ref={manualModalRef}
+            className="relative w-full max-w-md mt-16 mb-16 bg-white rounded-lg shadow-lg flex flex-col max-h-[calc(100vh-64px)]"
+          >
+            <div className="flex justify-end p-2 border-b border-gray-200 flex-shrink-0">
+              <button
+                onClick={() => setShowManualModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="p-0 overflow-auto flex-grow">
+              <CandidateFormDynamic onAdd={() => setShowManualModal(false)} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showBulkModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40"
+          onClick={(e) => handleBulkOverlayClick(e, bulkModalRef, setShowBulkModal)}
+        >
+          <div
+            ref={bulkModalRef}
+            className="relative w-full max-w-md mt-16 mb-16 bg-white rounded-lg shadow-lg flex flex-col max-h-[calc(100vh-64px)]"
+          >
+            <div className="flex justify-end p-2 border-b border-gray-200 flex-shrink-0">
+              <button
+                onClick={() => setShowBulkModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="p-0 overflow-auto flex-grow">
+              <AdminCandidateUpload />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
