@@ -1,44 +1,44 @@
-import { useState } from 'react'
-import './App.css'
-import Sidebar from "./components/layout/Sidebar";
-import Topbar from "./components/layout/Topbar";
-import Dashboard from "./components/layout/Dashboard";
-import Footer from "./components/layout/Footer";
-import { Routes, Route } from 'react-router-dom';
-import AdminCandidateUpload from './components/pages/AdminCandidateUpload';
-import CandidateFormDynamic from './components/pages/CandidateFormDynamic';
-import CandidateManager from './components/pages/CandidateManager';
-import AdminInvitationPage from './components/pages/AdminInvitationPage';
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
+// Admin imports
+import AdminLayout from "./components/layout/AdminLayout";
+import Dashboard from "./components/layout/Dashboard";
+import AdminCandidateUpload from "./components/pages/AdminCandidateUpload";
+import CandidateFormDynamic from "./components/pages/CandidateFormDynamic";
+import CandidateManager from "./components/pages/CandidateManager";
+import AdminInvitationPage from "./components/pages/AdminInvitationPage";
+
+// Candidate imports
+import InvitationPage from "./components/pages/candidate/InvitationPage";
+import TestPage from "./components/pages/candidate/TestPage";
+import CompletionPage from "./components/pages/candidate/CompletionPage";
+import PlainLayout from "./components/layout/PlainLayout";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+    <Routes>
+      {/* ===== Admin Routes ===== */}
+      <Route
+        path="/*"
+        element={<AdminLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />}
+      >
+        <Route index element={<Dashboard />} /> {/* Default page */}
+        <Route path="manage-candidate" element={<CandidateManager />} />
+        <Route path="add-candidates" element={<CandidateFormDynamic />} />
+        <Route path="manage-invitations" element={<AdminInvitationPage />} />
+        <Route path="upload-candidates" element={<AdminCandidateUpload />} />
+      </Route>
 
-      {/* Main Content */}
-      <div className="flex-1 m-0 flex flex-col overflow-hidden">
-        <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-
-        <main className="flex-1 overflow-y-auto p-4">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/manage-candidate" element={<CandidateManager />} />
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/add-candidates" element={<CandidateFormDynamic />} />
-            <Route path="/manage-invitations" element={<AdminInvitationPage />} />
-
-
-
-          </Routes>
-        </main>
-       {/* Footer */}
-        <Footer /> 
-      </div>
-    </div>
+      {/* ===== Candidate Routes ===== */}
+      <Route element={<PlainLayout />}>
+        <Route path="/invite/:token" element={<InvitationPage />} />
+        <Route path="/test/:token" element={<TestPage />} />
+        <Route path="/completion/:token" element={<CompletionPage />} />
+      </Route>
+    </Routes>
   );
 }
 
