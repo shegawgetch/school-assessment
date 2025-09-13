@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 const isValidEmail = (email) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
-const CandidateFormDynamic = () => {
+const CandidateFormDynamic = ({ onAdd, selectedAssessment }) => {
   const [emails, setEmails] = useState([{ value: "", error: "" }]);
   const [loading, setLoading] = useState(false);
   const inputRefs = useRef([]);
@@ -27,15 +27,10 @@ const CandidateFormDynamic = () => {
   };
 
   const validateEmails = () => {
-    const updated = emails.map((e) => ({
-      ...e,
-      value: e.value.trim(),
-      error: "",
-    }));
+    const updated = emails.map((e) => ({ ...e, value: e.value.trim(), error: "" }));
     let hasError = false;
 
-    // Validate each email
-    updated.forEach((e, i) => {
+    updated.forEach((e) => {
       if (!e.value) {
         e.error = "Email is required.";
         hasError = true;
@@ -45,13 +40,12 @@ const CandidateFormDynamic = () => {
       }
     });
 
-    // Check duplicates
     const emailValues = updated.map((e) => e.value);
     const duplicates = emailValues.filter(
       (item, index) => emailValues.indexOf(item) !== index && item !== ""
     );
     if (duplicates.length > 0) {
-      updated.forEach((e, i) => {
+      updated.forEach((e) => {
         if (duplicates.includes(e.value)) e.error = "Duplicate email.";
       });
       hasError = true;
@@ -59,11 +53,9 @@ const CandidateFormDynamic = () => {
 
     setEmails(updated);
 
-    // Focus first error input
     if (hasError) {
       const firstErrorIndex = updated.findIndex((e) => e.error);
-      if (inputRefs.current[firstErrorIndex])
-        inputRefs.current[firstErrorIndex].focus();
+      if (inputRefs.current[firstErrorIndex]) inputRefs.current[firstErrorIndex].focus();
       return false;
     }
 
@@ -78,7 +70,10 @@ const CandidateFormDynamic = () => {
     try {
       const emailList = emails.map((e) => e.value);
       const payload =
-        emailList.length === 1 ? { email: emailList[0] } : { emails: emailList };
+        emailList.length === 1
+          ? { email: emailList[0], assessmentName: selectedAssessment }
+          : { emails: emailList, assessmentName: selectedAssessment };
+
       const endpoint =
         emailList.length === 1 ? "/api/candidates" : "/api/candidates/bulk";
 
@@ -86,6 +81,7 @@ const CandidateFormDynamic = () => {
 
       toast.success("✅ Candidate(s) saved successfully!");
       setEmails([{ value: "", error: "" }]);
+      if (onAdd) onAdd();
     } catch (err) {
       toast.error(err.response?.data?.message || "❌ Something went wrong.");
     } finally {
@@ -96,11 +92,8 @@ const CandidateFormDynamic = () => {
   const handleKeyDown = (e, index) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (index === emails.length - 1) {
-        addEmailField();
-      } else {
-        inputRefs.current[index + 1]?.focus();
-      }
+      if (index === emails.length - 1) addEmailField();
+      else inputRefs.current[index + 1]?.focus();
     }
   };
 
@@ -139,9 +132,7 @@ const CandidateFormDynamic = () => {
               </button>
             )}
           </div>
-          {emailObj.error && (
-            <p className="text-red-600 text-sm">{emailObj.error}</p>
-          )}
+          {emailObj.error && <p className="text-red-600 text-sm">{emailObj.error}</p>}
         </div>
       ))}
 
@@ -162,7 +153,6 @@ const CandidateFormDynamic = () => {
         {loading ? "Saving..." : "Save Candidate(s)"}
       </button>
 
-      {/* Toast Container */}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </form>
   );

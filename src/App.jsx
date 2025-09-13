@@ -14,6 +14,7 @@ import InvitationPage from "./components/pages/candidate/InvitationPage";
 import TestPage from "./components/pages/candidate/TestPage";
 import CompletionPage from "./components/pages/candidate/CompletionPage";
 import PlainLayout from "./components/layout/PlainLayout";
+import InvitationSettings from "./components/pages/InvitationSettings";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,6 +31,7 @@ function App() {
         <Route path="add-candidates" element={<CandidateFormDynamic />} />
         <Route path="manage-invitations" element={<AdminInvitationPage />} />
         <Route path="upload-candidates" element={<AdminCandidateUpload />} />
+        <Route path="invitation-settings" element={<InvitationSettings />} />
       </Route>
 
       {/* ===== Candidate Routes ===== */}

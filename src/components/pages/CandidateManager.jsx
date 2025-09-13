@@ -18,7 +18,7 @@ import {
   CheckIcon,
   ChevronUpIcon,
   ChevronDownIcon,
-  XMarkIcon, // close icon
+  XMarkIcon,
 } from "@heroicons/react/24/solid";
 
 const CandidateManager = () => {
@@ -33,9 +33,12 @@ const CandidateManager = () => {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
   const [rowSelection, setRowSelection] = useState({});
   const [editingCell, setEditingCell] = useState({});
+  const [selectedAssessment, setSelectedAssessment] = useState("");
+  const [assessmentError, setAssessmentError] = useState(false);
 
   const bulkModalRef = useRef();
   const manualModalRef = useRef();
+  const assessmentRef = useRef();
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -133,10 +136,29 @@ const CandidateManager = () => {
       setShowBulkModal(false);
     }
   };
+
   const handleManualOverlayClick = (e) => {
     if (manualModalRef.current && !manualModalRef.current.contains(e.target)) {
       setShowManualModal(false);
     }
+  };
+
+  const handleOpenManualModal = () => {
+    if (!selectedAssessment) {
+      setAssessmentError(true);
+      return;
+    }
+    setAssessmentError(false);
+    setShowManualModal(true);
+  };
+
+  const handleOpenBulkModal = () => {
+    if (!selectedAssessment) {
+      setAssessmentError(true);
+      return;
+    }
+    setAssessmentError(false);
+    setShowBulkModal(true);
   };
 
   const columns = useMemo(
@@ -330,16 +352,42 @@ const CandidateManager = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-2">
       <div className="max-w-6xl mx-auto space-y-2">
+
+        {/* Assessment Dropdown */}
+<div className="mb-4 flex flex-row items-center gap-2">
+  <label className="font-semibold text-gray-700 whitespace-nowrap">
+    Assessment Name:
+  </label>
+  <select
+    ref={assessmentRef}
+    value={selectedAssessment}
+    onChange={(e) => {
+      setSelectedAssessment(e.target.value);
+      if (e.target.value) setAssessmentError(false);
+    }}
+    className={`w-auto min-w-[180px] p-2 rounded border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 bg-white ${
+      assessmentError ? "border-red-500" : "border-gray-300"
+    }`}
+  >
+    <option value="">Select Assessment</option>
+    <option value="Assessment A">Assessment A</option>
+    <option value="Assessment B">Assessment B</option>
+  </select>
+  {assessmentError && (
+    <p className="text-red-600 text-sm">{assessmentError && "Assessment is required."}</p>
+  )}
+</div>
+
         {/* Top Buttons */}
         <div className="flex flex-wrap justify-end gap-2 mb-4">
           <button
-            onClick={() => setShowManualModal(true)}
+            onClick={handleOpenManualModal}
             className="flex items-center gap-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
           >
             <PlusIcon className="w-5 h-5" /> Add Candidate
           </button>
           <button
-            onClick={() => setShowBulkModal(true)}
+            onClick={handleOpenBulkModal}
             className="bg-gray-200 bg-opacity-50 border border-gray-400 text-gray-800 px-3 py-1.5 rounded-lg shadow hover:bg-gray-300 transition flex items-center gap-1 font-medium text-sm"
           >
             <ArrowUpTrayIcon className="w-5 h-5" /> Upload CSV/Excel
@@ -438,56 +486,95 @@ const CandidateManager = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Manual Modal */}
+{showManualModal && (
+  <div
+    className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 overflow-auto"
+    onClick={(e) => handleManualOverlayClick(e)}
+  >
+    <div
+      ref={manualModalRef}
+      className="relative w-full max-w-md mt-16 mb-16 bg-white rounded-lg shadow-lg overflow-auto max-h-[80vh]"
+    >
+      {/* Sticky Header with Close Icon */}
+      <div className="sticky top-0 bg-white border-b border-gray-300 z-10 flex justify-end p-2">
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setShowManualModal(false)}
+        >
+          <XMarkIcon className="w-6 h-6" />
+        </button>
       </div>
 
-            {/* Modals */}
-      {showManualModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40"
-          onClick={(e) => handleManualOverlayClick(e, manualModalRef, setShowManualModal)}
-        >
-          <div
-            ref={manualModalRef}
-            className="relative w-full max-w-md mt-16 mb-16 bg-white rounded-lg shadow-lg flex flex-col max-h-[calc(100vh-64px)]"
-          >
-            <div className="flex justify-end p-2 border-b border-gray-200 flex-shrink-0">
-              <button
-                onClick={() => setShowManualModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-xl font-bold"
-              >
-                &times;
-              </button>
-            </div>
-            <div className="p-0 overflow-auto flex-grow">
-              <CandidateFormDynamic onAdd={() => setShowManualModal(false)} />
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="p-4">
+        <CandidateFormDynamic
+          candidate={selectedCandidate}
+          onClose={() => setShowManualModal(false)}
+          addCandidate={addCandidate}
+          assessmentName={selectedAssessment}
+        />
+      </div>
+    </div>
+  </div>
+)}
 
-      {showBulkModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40"
-          onClick={(e) => handleBulkOverlayClick(e, bulkModalRef, setShowBulkModal)}
+{/* Bulk Modal */}
+{showBulkModal && (
+  <div
+    className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 overflow-auto"
+    onClick={(e) => handleBulkOverlayClick(e)}
+  >
+    <div
+      ref={bulkModalRef}
+      className="relative w-full max-w-md mt-16 mb-16 bg-white rounded-lg shadow-lg overflow-auto max-h-[80vh]"
+    >
+      {/* Sticky Header with Close Icon */}
+      <div className="sticky top-0 bg-white border-b border-gray-300 z-10 flex justify-end p-2">
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setShowBulkModal(false)}
         >
-          <div
-            ref={bulkModalRef}
-            className="relative w-full max-w-md mt-16 mb-16 bg-white rounded-lg shadow-lg flex flex-col max-h-[calc(100vh-64px)]"
-          >
-            <div className="flex justify-end p-2 border-b border-gray-200 flex-shrink-0">
-              <button
-                onClick={() => setShowBulkModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-xl font-bold"
-              >
-                &times;
-              </button>
-            </div>
-            <div className="p-0 overflow-auto flex-grow">
-              <AdminCandidateUpload />
-            </div>
-          </div>
-        </div>
-      )}
+          <XMarkIcon className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="p-4">
+        <AdminCandidateUpload
+          addCandidatesBulk={addCandidatesBulk}
+          onClose={() => setShowBulkModal(false)}
+          assessmentName={selectedAssessment}
+        />
+      </div>
+    </div>
+  </div>
+)}
+
+{/* View Modal */}
+{showViewModal && selectedCandidate && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-auto">
+    <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg overflow-auto max-h-[80vh]">
+      {/* Sticky Header with Close Icon */}
+      <div className="sticky top-0 bg-white border-b border-gray-300 z-10 flex justify-end p-2">
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setShowViewModal(false)}
+        >
+          <XMarkIcon className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="p-4">
+        <h2 className="text-xl font-semibold mb-2">Candidate Details</h2>
+        <p><strong>Name:</strong> {selectedCandidate.name}</p>
+        <p><strong>Email:</strong> {selectedCandidate.email}</p>
+        <p><strong>Status:</strong> {selectedCandidate.status}</p>
+      </div>
+    </div>
+  </div>
+)}
+
+      </div>
     </div>
   );
 };

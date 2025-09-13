@@ -6,25 +6,21 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const AdminCandidateUpload = () => {
+const AdminCandidateUpload = ({ selectedAssessment }) => {
   const [file, setFile] = useState(null);
   const [candidates, setCandidates] = useState([]);
-  const [assessmentName, setAssessmentName] = useState("");
-  const [isParsing, setIsParsing] = useState(false); // NEW
+  const [isParsing, setIsParsing] = useState(false);
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
     if (!file) return toast.error("Please select a file.");
-    if (!assessmentName) return toast.error("Please select an assessment.");
 
-    setIsParsing(true); // disable button while parsing
+    setIsParsing(true);
     try {
       const rawData = await parseCandidateFile(file);
       const normalizedData = rawData.map((row) => {
         const normalizedRow = {};
-        for (const key in row) {
-          normalizedRow[key.toLowerCase()] = row[key];
-        }
+        for (const key in row) normalizedRow[key.toLowerCase()] = row[key];
         return { email: normalizedRow.email || "", error: "" };
       });
       setCandidates(normalizedData);
@@ -32,20 +28,18 @@ const AdminCandidateUpload = () => {
     } catch (err) {
       toast.error("Error parsing file.");
     } finally {
-      setIsParsing(false); // re-enable button
+      setIsParsing(false);
     }
   };
 
   const handleSave = async (validCandidates) => {
     await axios.post("/api/candidates/bulk", {
-      assessmentName,
+      assessmentName: selectedAssessment,
       candidates: validCandidates,
     });
 
-    // Reset form
     setFile(null);
     setCandidates([]);
-    setAssessmentName("");
   };
 
   return (
@@ -57,24 +51,9 @@ const AdminCandidateUpload = () => {
       <form onSubmit={handleFileUpload} className="space-y-5">
         <UploadForm onFileSelect={setFile} />
 
-        <div>
-          <label className="block mb-2 font-semibold text-gray-700">
-            Assessment Name
-          </label>
-          <select
-            value={assessmentName}
-            onChange={(e) => setAssessmentName(e.target.value)}
-            className="w-full p-2 rounded border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-          >
-            <option value="">Select Assessment</option>
-            <option value="Assessment A">Assessment A</option>
-            <option value="Assessment B">Assessment B</option>
-          </select>
-        </div>
-
         <button
           type="submit"
-          disabled={isParsing} // DISABLE while parsing
+          disabled={isParsing}
           className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition w-full sm:w-auto ${
             isParsing ? "opacity-50 cursor-not-allowed" : ""
           }`}
@@ -89,12 +68,11 @@ const AdminCandidateUpload = () => {
           <EditableCandidateTable
             candidates={candidates}
             setCandidates={setCandidates}
-            onSubmit={handleSave} // Only called on Save button click
+            onSubmit={handleSave}
           />
         </div>
       )}
 
-      {/* Toast notifications */}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
   );
