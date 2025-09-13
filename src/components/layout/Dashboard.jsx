@@ -16,27 +16,24 @@ import DashboardAnalytics from "../pages/DashboardAnalytics";
 import AdminCandidateUpload from "../pages/AdminCandidateUpload";
 import CandidateFormDynamic from "../pages/CandidateFormDynamic";
 import axios from "axios";
+import * as XLSX from "xlsx";
 
 export default function Dashboard() {
+  // Modal States
   const [showManualModal, setShowManualModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("Overview");
+
+  // Data
   const [invites, setInvites] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All Status");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
+  // Modal Refs
   const manualModalRef = useRef(null);
   const uploadModalRef = useRef(null);
   const analyticsModalRef = useRef(null);
 
-  const handleOverlayClick = (e, modalRef, closeFn) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      closeFn(false);
-    }
-  };
-
+  // Fetch Invitations
   useEffect(() => {
     const fetchInvites = async () => {
       try {
@@ -49,8 +46,13 @@ export default function Dashboard() {
     fetchInvites();
   }, []);
 
+  // Helper
   const isExpired = (expiresAt) => expiresAt && new Date(expiresAt) < new Date();
+  const handleOverlayClick = (e, modalRef, closeFn) => {
+    if (modalRef.current && !modalRef.current.contains(e.target)) closeFn(false);
+  };
 
+  // Cards Data
   const totalCandidates = invites.length;
   const pending = invites.filter((i) => i.status === "pending" && !isExpired(i.expiresAt)).length;
   const accepted = invites.filter((i) => i.status === "accepted" && !isExpired(i.expiresAt)).length;
@@ -67,12 +69,12 @@ export default function Dashboard() {
     { title: "Invitation Sent", value: invitationSent, icon: EnvelopeIcon, iconColor: "text-indigo-400" },
   ];
 
+  // Sorting
   const requestSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
     setSortConfig({ key, direction });
   };
-
   const sortedInvites = [...invites].sort((a, b) => {
     if (!sortConfig.key) return 0;
     const aVal = a[sortConfig.key] ?? "";
@@ -82,93 +84,108 @@ export default function Dashboard() {
     return 0;
   });
 
-  const filteredInvites = sortedInvites
-    .filter((i) => (statusFilter === "All Status" ? true : i.status.toLowerCase() === statusFilter.toLowerCase()))
-    .filter((i) => i.name?.toLowerCase().includes(searchTerm.toLowerCase()));
+  // Export function
+  const exportToExcel = (data, filename) => {
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.writeFile(wb, filename);
+  };
 
-  // Reusable Paper Table Component
-  const PaperTable = ({ data }) => (
-    <div className="overflow-x-auto bg-white rounded-xl shadow p-4">
-      <div className="flex flex-wrap justify-between gap-2 items-center mb-4">
-        <div className="flex gap-2">
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search candidate"
-              className="pl-8 pr-2 py-1.5 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+  // Independent Table Component
+  const PaperTable = ({ data, label }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("All Status");
+
+    const filtered = data
+      .filter((i) => (statusFilter === "All Status" ? true : i.status.toLowerCase() === statusFilter.toLowerCase()))
+      .filter((i) => i.name?.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    return (
+      <div className="overflow-x-auto bg-white rounded-xl shadow p-4 mb-6">
+        <h4 className="text-gray-800 font-bold text-lg mb-2">{label}</h4>
+        <div className="flex flex-wrap justify-between gap-3 mb-4 items-center">
+          <div className="flex gap-2 flex-wrap">
+            <div className="relative w-64">
+              <MagnifyingGlassIcon className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder={`Search ${label}`}
+                className="pl-8 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              {["All Status", "Pending", "Completed", "Expired", "Accepted"].map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
           </div>
-          <select
-            className="border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+          <button
+            onClick={() => exportToExcel(filtered, `${label}.xlsx`)}
+            className="bg-gray-200 text-black border border-gray-400 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition flex items-center gap-1 font-medium"
           >
-            {["All Status", "Pending", "Completed", "Expired", "Accepted"].map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+            <ArrowDownTrayIcon className="h-5 w-5" /> Export
+          </button>
         </div>
-        <button className="bg-gray-200 text-black border border-gray-400 px-4 py-1 rounded-lg shadow hover:bg-gray-150 transition flex items-center gap-1 font-medium">
-          <ArrowDownTrayIcon className="h-5 w-5" />
-          Export
-        </button>
-      </div>
 
-      <table className="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow">
-        <thead className="bg-gray-100 sticky top-0 z-10">
-          <tr>
-            {["Candidate", "Contact", "Position", "Status", "Invitation", "Reminders", "Actions"].map(
-              (col) => (
+        <table className="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow">
+          <thead className="bg-gray-100 sticky top-0 z-10">
+            <tr>
+              {["Candidate", "Contact", "Position", "Status", "Invitation", "Reminders", "Actions"].map((col) => (
                 <th
-                  key={col}
-                  className="px-3 py-2 cursor-pointer text-left text-gray-700 hover:text-blue-600"
+                  key={col + label}
+                  className="px-3 py-2 cursor-pointer text-left text-gray-700 hover:text-blue-600 select-none"
                   onClick={() => requestSort(col.toLowerCase())}
                 >
                   <div className="flex items-center gap-1">
                     {col}
                     {sortConfig.key === col.toLowerCase() && (
                       <ChevronDownIcon
-                        className={`h-6 w-6 transform ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+                        className={`h-5 w-5 transform ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
                       />
                     )}
                   </div>
                 </th>
-              )
-            )}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan={7} className="text-center py-4 text-gray-500">
-                No candidates found.
-              </td>
+              ))}
             </tr>
-          ) : (
-            data.map((invite, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="px-3 py-2">{invite.name}</td>
-                <td className="px-3 py-2">{invite.contact}</td>
-                <td className="px-3 py-2">{invite.position}</td>
-                <td className="px-3 py-2 capitalize">{invite.status}</td>
-                <td className="px-3 py-2">{invite.invitation}</td>
-                <td className="px-3 py-2">{invite.reminders}</td>
-                <td className="px-3 py-2 flex gap-2">
-                  <button className="text-blue-600 hover:underline">Edit</button>
-                  <button className="text-red-600 hover:underline">Delete</button>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="text-center py-4 text-gray-500">
+                  No records found.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+            ) : (
+              filtered.map((invite, idx) => (
+                <tr key={idx} className="hover:bg-blue-50 transition-colors">
+                  <td className="px-3 py-2">{invite.name}</td>
+                  <td className="px-3 py-2">{invite.contact}</td>
+                  <td className="px-3 py-2">{invite.position}</td>
+                  <td className="px-3 py-2 capitalize">{invite.status}</td>
+                  <td className="px-3 py-2">{invite.invitation}</td>
+                  <td className="px-3 py-2">{invite.reminders}</td>
+                  <td className="px-3 py-2 flex gap-2">
+                    <button className="text-blue-600 hover:underline">Edit</button>
+                    <button className="text-red-600 hover:underline">Delete</button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   return (
     <main className="min-h-screen p-4 pt-2 bg-gray-100">
@@ -187,7 +204,7 @@ export default function Dashboard() {
           </button>
           <button
             onClick={() => setShowUploadModal(true)}
-            className="bg-gray-200 bg-opacity-50 border border-gray-400 text-gray-800 px-3 py-1.5 rounded-lg shadow hover:bg-gray-300 transition flex items-center gap-1 font-medium text-sm"
+            className="bg-gray-200 border border-gray-400 text-gray-800 px-3 py-1.5 rounded-lg shadow hover:bg-gray-300 transition flex items-center gap-1 font-medium text-sm"
           >
             <ArrowUpTrayIcon className="h-4 w-4" />
             Upload CSV/Excel
@@ -195,8 +212,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Dashboard Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
         {cards.map((card) => (
           <div
             key={card.title}
@@ -211,70 +228,51 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Tabs with icons */}
-      <div className="flex border-b border-gray-300 mb-4">
-        {[
-          { name: "Overview", icon: ChartBarIcon },
-          { name: "Candidates", icon: UserGroupIcon },
-          { name: "Invitations", icon: EnvelopeIcon },
-          { name: "Analytics", icon: ChartBarIcon },
-        ].map((tab) => (
-          <button
-            key={tab.name}
-            className={`px-4 py-2 font-medium flex items-center gap-1 ${
-              activeTab === tab.name
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }`}
-            onClick={() => setActiveTab(tab.name)}
-          >
-            <tab.icon className="h-5 w-5" />
-            {tab.name}
-          </button>
-        ))}
-      </div>
+      {/* Quick Actions with Grid and Attractive Links */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Recent Activity */}
+        <div className="p-4 bg-white rounded-lg shadow flex flex-col">
+          <h6 className="font-semibold text-gray-700 mb-2">Recent Activity</h6>
+          <p className="text-sm text-gray-500">No recent activity</p>
+        </div>
 
-      {/* Tab Content */}
-      {activeTab === "Overview" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div className="p-4 bg-white rounded-lg shadow flex flex-col">
-            <h6 className="font-semibold text-gray-700 mb-2">Recent Activity</h6>
-            <p className="text-sm text-gray-500">No recent activity</p>
-          </div>
-          <div className="p-4 bg-white rounded-lg shadow flex flex-col items-center text-center">
-            <h6 className="font-semibold text-gray-700 mb-2">Quick Actions</h6>
-            <div className="flex flex-col gap-2 w-full">
-              <button
-                onClick={() => setShowManualModal(true)}
-                className="bg-blue-600 text-white px-3 py-2 rounded-lg shadow hover:bg-blue-500 transition flex items-center justify-center gap-1 font-medium"
-              >
-                + Add New Candidate
-              </button>
-              <button
-                onClick={() => setShowUploadModal(true)}
-                className="bg-gray-200 bg-opacity-50 text-gray-800 px-3 py-2 rounded-lg shadow hover:bg-gray-300 transition flex items-center justify-center gap-1 font-medium"
-              >
-                Upload Bulk Candidates
-              </button>
-              <button
-                onClick={() => setShowAnalyticsModal(true)}
-                className="bg-gray-200 bg-opacity-50 text-gray-800 px-3 py-2 rounded-lg shadow hover:bg-gray-300 transition flex items-center justify-center gap-1 font-medium"
-              >
-                View Analytics
-              </button>
-            </div>
+        {/* Quick Actions */}
+        <div className="p-4 bg-white rounded-lg shadow flex flex-col">
+          <h6 className="font-semibold text-gray-700 mb-2 text-center">Quick Actions</h6>
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            <button
+              onClick={() => setShowManualModal(true)}
+              className="bg-blue-600 text-white rounded-lg shadow hover:shadow-lg hover:bg-blue-500 transition flex flex-col items-center justify-center py-2 gap-1 text-sm"
+            >
+              <UserGroupIcon className="h-5 w-5" />
+              Add Candidate
+            </button>
+
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="bg-green-600 text-white rounded-lg shadow hover:shadow-lg hover:bg-green-500 transition flex flex-col items-center justify-center py-2 gap-1 text-sm"
+            >
+              <ArrowUpTrayIcon className="h-5 w-5" />
+              Upload Bulk
+            </button>
+
+            <button
+              onClick={() => setShowAnalyticsModal(true)}
+              className="bg-indigo-600 text-white rounded-lg shadow hover:shadow-lg hover:bg-indigo-500 transition flex flex-col items-center justify-center py-2 gap-1 text-sm"
+            >
+              <ChartBarIcon className="h-5 w-5" />
+              View Analytics
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Candidates Tab */}
-      {activeTab === "Candidates" && <PaperTable data={filteredInvites} />}
+      {/* Tables */}
+      <PaperTable data={sortedInvites} label="Candidate List" />
+      <PaperTable data={sortedInvites} label="Invitation Records" />
 
-      {/* Invitations Tab */}
-      {activeTab === "Invitations" && <PaperTable data={filteredInvites} />}
-
-      {/* Analytics Tab */}
-      {activeTab === "Analytics" && <DashboardAnalytics />}
+      {/* Analytics */}
+      <DashboardAnalytics />
 
       {/* Modals */}
       {showManualModal && (
@@ -325,7 +323,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Analytics Modal */}
       {showAnalyticsModal && (
         <div
           className="fixed inset-0 z-50 flex items-start justify-center bg-black/40"
@@ -336,11 +333,10 @@ export default function Dashboard() {
             className="relative w-full max-w-3xl mt-16 mb-16 bg-white rounded-lg shadow-lg flex flex-col max-h-[calc(100vh-64px)]"
           >
             <div className="flex justify-end p-2 border-b border-gray-200 flex-shrink-0">
-           {/* Centered Text */}
-         <h6 className="absolute left-1/2 transform -translate-x-1/2 font-bold text-gray-700">
-         Invitation Analytics
-         </h6>
-           <button
+              <h6 className="absolute left-1/2 transform -translate-x-1/2 font-bold text-gray-700">
+                Invitation Analytics
+              </h6>
+              <button
                 onClick={() => setShowAnalyticsModal(false)}
                 className="text-gray-500 hover:text-gray-700 text-xl font-bold"
               >
