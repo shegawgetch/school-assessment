@@ -1,4 +1,5 @@
-import { UserGroupIcon, EnvelopeIcon, HomeIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
+import React from "react";
+import { Squares2X2Icon, UserGroupIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -9,26 +10,20 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   };
 
   const links = [
-    { to: "/", label: "Dashboard", icon: HomeIcon },
-    { to: "/manage-candidate", label: "Candidates", icon: UserGroupIcon },
-    { to: "/manage-invitations", label: "Invitations", icon: EnvelopeIcon },
+    { to: "/", label: "Dashboard", icon: Squares2X2Icon },
+    { to: "/manage-invitations", label: "Invitations", icon: "📧" },
+    { to: "/invitations/new", label: "New Invitation", icon: "➕" },
     { to: "/invitation-settings", label: "Invitation Settings", icon: Cog6ToothIcon },
   ];
 
   return (
     <>
-      {/* Mobile overlay */}
-      <div
-        className={`fixed inset-0 bg-black/50 z-30 md:hidden ${isOpen ? "block" : "hidden"}`}
-        onClick={() => setIsOpen(false)}
-      ></div>
-
       {/* Sidebar */}
       <aside
-        className={`fixed z-40 inset-y-0 left-0 w-64 bg-[#1B1F2A] text-gray-200 border-r border-gray-700
+        className={`fixed z-50 top-0 left-0 w-64 bg-[#1B1F2A] text-gray-200 border-r border-gray-700
         transform transition-transform duration-200 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-        md:translate-x-0 md:static md:inset-0`}
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0 min-h-screen`}
       >
         <div className="h-full flex flex-col">
           {/* Logo / Header */}
@@ -46,12 +41,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   to={to}
                   onClick={handleLinkClick}
                   className={`flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium transition-colors
-                    ${isActive
-                      ? "bg-indigo-600 text-white shadow-md"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                    }`}
+                    ${isActive ? "bg-indigo-600 text-white shadow-md" : "text-gray-300 hover:bg-gray-800 hover:text-white"}`}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  {typeof Icon === "string" ? (
+                    <span className="text-2xl">{Icon}</span>
+                  ) : (
+                    <Icon className="h-6 w-6 flex-shrink-0 text-indigo-400" />
+                  )}
                   <span>{label}</span>
                 </Link>
               );
@@ -59,6 +55,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </nav>
         </div>
       </aside>
+
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
     </>
   );
 }

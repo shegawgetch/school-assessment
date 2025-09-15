@@ -1,46 +1,37 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
-
-// Admin imports
-import AdminLayout from "./components/layout/AdminLayout";
-import Dashboard from "./components/layout/Dashboard";
-import AdminCandidateUpload from "./components/pages/AdminCandidateUpload";
-import CandidateFormDynamic from "./components/pages/CandidateFormDynamic";
-import CandidateManager from "./components/pages/CandidateManager";
-import AdminInvitationPage from "./components/pages/AdminInvitationPage";
-
-// Candidate imports
-import InvitationPage from "./components/pages/candidate/InvitationPage";
-import TestPage from "./components/pages/candidate/TestPage";
-import CompletionPage from "./components/pages/candidate/CompletionPage";
-import PlainLayout from "./components/layout/PlainLayout";
-import InvitationSettings from "./components/pages/InvitationSettings";
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Topbar from './components/Topbar';
+import Sidebar from './components/Sidebar';
+import Dashboard from './pages/Dashboard';
+import Invitations from './pages/Invitations';
+import NewInvitation from './pages/NewInvitation';
+import InvitationDetails from './pages/InvitationDetails';
+import InvitationSettings from './pages/InvitationSettings';
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <Routes>
-      {/* ===== Admin Routes ===== */}
-      <Route
-        path="/*"
-        element={<AdminLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />}
-      >
-        <Route index element={<Dashboard />} /> {/* Default page */}
-        <Route path="manage-candidate" element={<CandidateManager />} />
-        <Route path="add-candidates" element={<CandidateFormDynamic />} />
-        <Route path="manage-invitations" element={<AdminInvitationPage />} />
-        <Route path="upload-candidates" element={<AdminCandidateUpload />} />
-        <Route path="invitation-settings" element={<InvitationSettings />} />
-      </Route>
+      <div className="min-h-screen bg-gray-50">
+        {/* Sidebar */}
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      {/* ===== Candidate Routes ===== */}
-      <Route element={<PlainLayout />}>
-        <Route path="/invite/:token" element={<InvitationPage />} />
-        <Route path="/test/:token" element={<TestPage />} />
-        <Route path="/completion/:token" element={<CompletionPage />} />
-      </Route>
-    </Routes>
+        {/* Topbar */}
+        <Topbar toggleSidebar={toggleSidebar} />
+
+        {/* Main content */}
+        <main className=" md:ml-64 p-6 pt-3 transition-all duration-200">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/invitations" element={<Invitations />} />
+            <Route path="/invitations/new" element={<NewInvitation />} />
+            <Route path="/invitations/:id" element={<InvitationDetails />} />
+            <Route path="/invitation-settings" element={<InvitationSettings />} />
+          </Routes>
+        </main>
+      </div>
   );
 }
 
