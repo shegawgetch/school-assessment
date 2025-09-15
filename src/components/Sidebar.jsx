@@ -11,7 +11,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   const links = [
     { to: "/", label: "Dashboard", icon: Squares2X2Icon },
-    { to: "/manage-invitations", label: "Invitations", icon: "📧" },
+    { to: "/invitations", label: "Invitations", icon: "📧" },
     { to: "/invitations/new", label: "New Invitation", icon: "➕" },
     { to: "/invitation-settings", label: "Invitation Settings", icon: Cog6ToothIcon },
   ];
