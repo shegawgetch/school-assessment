@@ -17,30 +17,69 @@ const NewInvitation = () => {
 
   const navigate = useNavigate();
   
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Update form data
+  setFormData(prev => ({
+    ...prev,
+    [name]: value
+  }));
 
-  const validateForm = () => {
-    const errors = [];
-    
-    if (!formData.name.trim()) {
-      errors.push('Name is required');
+  // Real-time validation
+  setFieldErrors(prev => {
+    const errors = { ...prev };
+
+    if (name === 'name') {
+      if (!value.trim()) {
+        errors.name = 'Name is required';
+      } else if (!/^[A-Za-z ]+$/.test(value)) {
+        errors.name = 'Name should contain only letters';
+      } else {
+        delete errors.name; // remove error when valid
+      }
     }
-    
-    if (!formData.email.trim()) {
-      errors.push('Email is required');
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.push('Email is invalid');
+
+    if (name === 'email') {
+      if (!value.trim()) {
+        errors.email = 'Email is required';
+      } else if (!/\S+@\S+\.\S+/.test(value)) {
+        errors.email = 'Email is invalid';
+      } else {
+        delete errors.email; // remove error when valid
+      }
     }
 
     return errors;
-  };
+  });
+};
+
+const [fieldErrors, setFieldErrors] = useState({});
+
+ const validateForm = () => {
+  const errors = {};
+  const alertErrors = [];
+
+  if (!formData.name.trim()) {
+    errors.name = 'Name is required';
+    alertErrors.push('Name is required');
+  } else if (!/^[A-Za-z ]+$/.test(formData.name)) {
+    errors.name = 'Name should contain only letters';
+    alertErrors.push('Name should contain only letters');
+  }
+
+  if (!formData.email.trim()) {
+    errors.email = 'Email is required';
+    alertErrors.push('Email is required');
+  } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    errors.email = 'Email is invalid';
+    alertErrors.push('Email is invalid');
+  }
+
+  setFieldErrors(errors);
+  return alertErrors;
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -108,35 +147,44 @@ const NewInvitation = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Single Invitation</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter candidate name"
-              />
-            </div>
+           <div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Name *
+  </label>
+  <input
+    type="text"
+    name="name"
+    value={formData.name}
+    onChange={handleInputChange}
+    placeholder="Enter candidate name"
+    className={`w-full rounded-md px-3 py-2 outline-none
+      ${fieldErrors.name
+        ? 'border border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500'
+        : 'border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'}
+    `}
+  />
+  {fieldErrors.name && <p className="mt-1 text-sm text-red-600">{fieldErrors.name}</p>}
+</div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter candidate email"
-              />
-            </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Email *
+  </label>
+  <input
+    type="email"
+    name="email"
+    value={formData.email}
+    onChange={handleInputChange}
+    placeholder="Enter candidate email"
+    className={`w-full rounded-md px-3 py-2 outline-none
+      ${fieldErrors.email
+        ? 'border border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500'
+        : 'border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'}
+    `}
+  />
+  {fieldErrors.email && <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>}
+</div>
+
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

@@ -26,7 +26,7 @@ export default function Topbar({ toggleSidebar }) {
         >
           <Bars3Icon className="h-6 w-6" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-800">Admin Dashboard</h1>
+        <h1 className="text-lg font-semibold text-gray-800">Invitation Management System</h1>
       </div>
 
       {/* Right: Avatar + Dropdown */}

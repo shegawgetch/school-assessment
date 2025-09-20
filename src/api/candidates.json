@@ -1,0 +1,818 @@
+[
+  {
+    "Candidate Name": "Matthew Mcdonald",
+    "Email": "jasonreynolds@gmail.com",
+    "Phone": "431-945-3562",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.46,
+    "Skills": [
+      "Embedded Systems",
+      "Spring Boot",
+      "Docker",
+      "Python",
+      "React",
+      "Cloud"
+    ],
+    "Job Description Match (%)": 95,
+    "Strength": "Good",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Sean Miller",
+    "Email": "bfisher@lane.com",
+    "Phone": "094.151.0204",
+    "Field of Study": "Computer Engineering",
+    "CGPA": 3.73,
+    "Skills": [
+      "React",
+      "DevOps",
+      "AI/ML"
+    ],
+    "Job Description Match (%)": 72,
+    "Strength": "Strong",
+    "Experience": "8 years"
+  },
+  {
+    "Candidate Name": "James Barber",
+    "Email": "kroach@yahoo.com",
+    "Phone": "(923)804-0237",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.99,
+    "Skills": [
+      "DevOps",
+      "Docker",
+      "Cloud",
+      "Python",
+      "Networking",
+      "SQL"
+    ],
+    "Job Description Match (%)": 97,
+    "Strength": "Outstanding",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Christian Butler",
+    "Email": "hallmatthew@jones-paul.biz",
+    "Phone": "+1-862-910-7158x7374",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.79,
+    "Skills": [
+      "Embedded Systems",
+      "Docker",
+      "Cloud",
+      "Kubernetes",
+      "SQL"
+    ],
+    "Job Description Match (%)": 82,
+    "Strength": "Strong",
+    "Experience": "8 years"
+  },
+  {
+    "Candidate Name": "Randall Fletcher",
+    "Email": "pateldeborah@esparza-cruz.com",
+    "Phone": "(359)909-7530x6428",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 2.98,
+    "Skills": [
+      "Python",
+      "Networking",
+      "Cloud",
+      "C++",
+      "Docker"
+    ],
+    "Job Description Match (%)": 98,
+    "Strength": "Average",
+    "Experience": "7 years"
+  },
+  {
+    "Candidate Name": "Erik Brewer",
+    "Email": "fbaker@gmail.com",
+    "Phone": "116-215-2634",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 2.79,
+    "Skills": [
+      "C++",
+      "Networking",
+      "SQL",
+      "Embedded Systems"
+    ],
+    "Job Description Match (%)": 90,
+    "Strength": "Strong",
+    "Experience": "5 years"
+  },
+  {
+    "Candidate Name": "Richard Smith",
+    "Email": "amystewart@hotmail.com",
+    "Phone": "3134152248",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.49,
+    "Skills": [
+      "SQL",
+      "Docker",
+      "React",
+      "DevOps"
+    ],
+    "Job Description Match (%)": 78,
+    "Strength": "Good",
+    "Experience": "2 years"
+  },
+  {
+    "Candidate Name": "Christopher Hanna",
+    "Email": "davisvictoria@yahoo.com",
+    "Phone": "+1-287-103-6065x864",
+    "Field of Study": "Computer Engineering",
+    "CGPA": 3.81,
+    "Skills": [
+      "SQL",
+      "Networking",
+      "Kubernetes",
+      "Java"
+    ],
+    "Job Description Match (%)": 68,
+    "Strength": "Strong",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Tiffany Williams",
+    "Email": "daniel99@gmail.com",
+    "Phone": "1851620643",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.31,
+    "Skills": [
+      "Cloud",
+      "Embedded Systems",
+      "DevOps"
+    ],
+    "Job Description Match (%)": 79,
+    "Strength": "Excellent",
+    "Experience": "5 years"
+  },
+  {
+    "Candidate Name": "Kristin Arnold",
+    "Email": "alyssa05@woods-roberts.com",
+    "Phone": "(570)501-3621x027",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.4,
+    "Skills": [
+      "SQL",
+      "DevOps",
+      "Embedded Systems"
+    ],
+    "Job Description Match (%)": 91,
+    "Strength": "Excellent",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Beth Williams",
+    "Email": "steve29@harper.com",
+    "Phone": "5058081775",
+    "Field of Study": "Mechanical Engineering",
+    "CGPA": 3.82,
+    "Skills": [
+      "Docker",
+      "React",
+      "Cloud"
+    ],
+    "Job Description Match (%)": 76,
+    "Strength": "Excellent",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Kyle Reilly",
+    "Email": "hwhite@gmail.com",
+    "Phone": "8302939943",
+    "Field of Study": "Computer Engineering",
+    "CGPA": 2.81,
+    "Skills": [
+      "Embedded Systems",
+      "Python",
+      "Networking",
+      "Cloud",
+      "AI/ML",
+      "C++"
+    ],
+    "Job Description Match (%)": 82,
+    "Strength": "Good",
+    "Experience": "6 years"
+  },
+  {
+    "Candidate Name": "Ann Griffin",
+    "Email": "ujohnson@caldwell.net",
+    "Phone": "720-326-2914",
+    "Field of Study": "Information Systems",
+    "CGPA": 3.47,
+    "Skills": [
+      "Cloud",
+      "DevOps",
+      "Java",
+      "React"
+    ],
+    "Job Description Match (%)": 72,
+    "Strength": "Excellent",
+    "Experience": "5 years"
+  },
+  {
+    "Candidate Name": "Jennifer Savage",
+    "Email": "dbennett@allen.com",
+    "Phone": "(421)109-4001x36627",
+    "Field of Study": "Computer Engineering",
+    "CGPA": 2.8,
+    "Skills": [
+      "DevOps",
+      "SQL",
+      "React"
+    ],
+    "Job Description Match (%)": 98,
+    "Strength": "Strong",
+    "Experience": "7 years"
+  },
+  {
+    "Candidate Name": "Shaun Clay",
+    "Email": "weekskatherine@hernandez.net",
+    "Phone": "1877567833",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 2.67,
+    "Skills": [
+      "Cloud",
+      "AI/ML",
+      "Embedded Systems",
+      "Kubernetes",
+      "C++"
+    ],
+    "Job Description Match (%)": 78,
+    "Strength": "Strong",
+    "Experience": "4 years"
+  },
+  {
+    "Candidate Name": "Andrew Gillespie",
+    "Email": "brent07@leonard.com",
+    "Phone": "+1-483-332-0168",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 3.58,
+    "Skills": [
+      "SQL",
+      "Kubernetes",
+      "Python"
+    ],
+    "Job Description Match (%)": 64,
+    "Strength": "Outstanding",
+    "Experience": "2 years"
+  },
+  {
+    "Candidate Name": "Joseph Stark",
+    "Email": "ericashea@gmail.com",
+    "Phone": "001-309-804-8611x393",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.27,
+    "Skills": [
+      "Docker",
+      "Spring Boot",
+      "DevOps"
+    ],
+    "Job Description Match (%)": 91,
+    "Strength": "Excellent",
+    "Experience": "2 years"
+  },
+  {
+    "Candidate Name": "Michael King",
+    "Email": "ashleybranch@fry-sims.biz",
+    "Phone": "367.447.5180",
+    "Field of Study": "Mechanical Engineering",
+    "CGPA": 2.95,
+    "Skills": [
+      "Cloud",
+      "Spring Boot",
+      "C++",
+      "React"
+    ],
+    "Job Description Match (%)": 56,
+    "Strength": "Outstanding",
+    "Experience": "7 years"
+  },
+  {
+    "Candidate Name": "Joe Alexander",
+    "Email": "debra79@gmail.com",
+    "Phone": "+1-020-416-2608x808",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 2.93,
+    "Skills": [
+      "React",
+      "Spring Boot",
+      "Kubernetes",
+      "Python",
+      "Java"
+    ],
+    "Job Description Match (%)": 90,
+    "Strength": "Good",
+    "Experience": "8 years"
+  },
+  {
+    "Candidate Name": "Melissa Jones",
+    "Email": "penadanielle@pena.net",
+    "Phone": "469-908-0191x861",
+    "Field of Study": "Information Systems",
+    "CGPA": 2.83,
+    "Skills": [
+      "Docker",
+      "Spring Boot",
+      "Kubernetes",
+      "SQL"
+    ],
+    "Job Description Match (%)": 50,
+    "Strength": "Strong",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Lauren Macdonald",
+    "Email": "ibarrapamela@yahoo.com",
+    "Phone": "030.289.3749",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.74,
+    "Skills": [
+      "SQL",
+      "Networking",
+      "Java"
+    ],
+    "Job Description Match (%)": 53,
+    "Strength": "Strong",
+    "Experience": "6 years"
+  },
+  {
+    "Candidate Name": "Roger Cline",
+    "Email": "ldavenport@hotmail.com",
+    "Phone": "035.207.4947",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.68,
+    "Skills": [
+      "SQL",
+      "DevOps",
+      "Spring Boot"
+    ],
+    "Job Description Match (%)": 83,
+    "Strength": "Strong",
+    "Experience": "5 years"
+  },
+  {
+    "Candidate Name": "Kayla Hunt",
+    "Email": "samantha31@hotmail.com",
+    "Phone": "+1-919-479-9096x1174",
+    "Field of Study": "Information Systems",
+    "CGPA": 3.65,
+    "Skills": [
+      "DevOps",
+      "Embedded Systems",
+      "AI/ML"
+    ],
+    "Job Description Match (%)": 77,
+    "Strength": "Excellent",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Hannah Powell",
+    "Email": "herrerameghan@mcdonald.com",
+    "Phone": "878.640.7718",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 2.72,
+    "Skills": [
+      "Cloud",
+      "Embedded Systems",
+      "Kubernetes",
+      "SQL"
+    ],
+    "Job Description Match (%)": 57,
+    "Strength": "Excellent",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Christy Shannon",
+    "Email": "pharris@davidson-stark.net",
+    "Phone": "(217)541-5454x230",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.48,
+    "Skills": [
+      "Python",
+      "Java",
+      "Cloud",
+      "AI/ML",
+      "Networking",
+      "Spring Boot"
+    ],
+    "Job Description Match (%)": 77,
+    "Strength": "Average",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Rebecca Williams",
+    "Email": "jenna09@campbell.com",
+    "Phone": "(176)636-9591",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.08,
+    "Skills": [
+      "C++",
+      "Kubernetes",
+      "Docker"
+    ],
+    "Job Description Match (%)": 72,
+    "Strength": "Excellent",
+    "Experience": "6 years"
+  },
+  {
+    "Candidate Name": "Shawn Shaw",
+    "Email": "schwartzbilly@yahoo.com",
+    "Phone": "847.377.9988x6246",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 2.53,
+    "Skills": [
+      "AI/ML",
+      "Networking",
+      "Cloud"
+    ],
+    "Job Description Match (%)": 78,
+    "Strength": "Excellent",
+    "Experience": "7 years"
+  },
+  {
+    "Candidate Name": "Helen Herman",
+    "Email": "smithbenjamin@gmail.com",
+    "Phone": "984-971-8852",
+    "Field of Study": "Mechanical Engineering",
+    "CGPA": 3.93,
+    "Skills": [
+      "Docker",
+      "DevOps",
+      "Kubernetes",
+      "React",
+      "Python",
+      "Embedded Systems"
+    ],
+    "Job Description Match (%)": 84,
+    "Strength": "Outstanding",
+    "Experience": "0 years"
+  },
+  {
+    "Candidate Name": "Trevor Fowler",
+    "Email": "jasonwatkins@hotmail.com",
+    "Phone": "001-680-104-3579x9218",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.85,
+    "Skills": [
+      "Cloud",
+      "Networking",
+      "React",
+      "AI/ML",
+      "C++"
+    ],
+    "Job Description Match (%)": 68,
+    "Strength": "Outstanding",
+    "Experience": "5 years"
+  },
+  {
+    "Candidate Name": "Matthew Davis",
+    "Email": "pamelaespinoza@alvarez.com",
+    "Phone": "590-445-7670x1828",
+    "Field of Study": "Mechanical Engineering",
+    "CGPA": 3.98,
+    "Skills": [
+      "C++",
+      "Embedded Systems",
+      "DevOps"
+    ],
+    "Job Description Match (%)": 97,
+    "Strength": "Good",
+    "Experience": "1 years"
+  },
+  {
+    "Candidate Name": "Caleb Powers",
+    "Email": "theresawatson@yahoo.com",
+    "Phone": "514.693.1156",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.71,
+    "Skills": [
+      "Python",
+      "Spring Boot",
+      "Embedded Systems",
+      "SQL",
+      "Docker"
+    ],
+    "Job Description Match (%)": 60,
+    "Strength": "Strong",
+    "Experience": "4 years"
+  },
+  {
+    "Candidate Name": "Janet Williams",
+    "Email": "joshuajohnson@hotmail.com",
+    "Phone": "(887)818-9519x563",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.28,
+    "Skills": [
+      "C++",
+      "Kubernetes",
+      "AI/ML",
+      "React",
+      "Java",
+      "Networking"
+    ],
+    "Job Description Match (%)": 89,
+    "Strength": "Average",
+    "Experience": "5 years"
+  },
+  {
+    "Candidate Name": "Tammy Stephenson",
+    "Email": "hector23@davis-miller.com",
+    "Phone": "(606)508-3189x190",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.63,
+    "Skills": [
+      "DevOps",
+      "Java",
+      "SQL"
+    ],
+    "Job Description Match (%)": 85,
+    "Strength": "Good",
+    "Experience": "2 years"
+  },
+  {
+    "Candidate Name": "Jordan Crawford",
+    "Email": "baxterdevin@moore-edwards.com",
+    "Phone": "001-955-445-4521x92906",
+    "Field of Study": "Computer Engineering",
+    "CGPA": 3.17,
+    "Skills": [
+      "Kubernetes",
+      "Java",
+      "DevOps",
+      "Cloud",
+      "Python",
+      "Spring Boot"
+    ],
+    "Job Description Match (%)": 56,
+    "Strength": "Good",
+    "Experience": "6 years"
+  },
+  {
+    "Candidate Name": "Kurt Mcdaniel",
+    "Email": "pamelarobbins@miller-bell.info",
+    "Phone": "(287)885-2077",
+    "Field of Study": "Software Engineering",
+    "CGPA": 3.71,
+    "Skills": [
+      "SQL",
+      "C++",
+      "Embedded Systems",
+      "Networking"
+    ],
+    "Job Description Match (%)": 76,
+    "Strength": "Average",
+    "Experience": "2 years"
+  },
+  {
+    "Candidate Name": "Morgan Newman",
+    "Email": "janet87@gmail.com",
+    "Phone": "956.141.4963x63150",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 3.33,
+    "Skills": [
+      "Docker",
+      "Java",
+      "Cloud",
+      "Python",
+      "C++",
+      "DevOps"
+    ],
+    "Job Description Match (%)": 68,
+    "Strength": "Strong",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Brianna Peterson",
+    "Email": "romeroheather@nguyen.com",
+    "Phone": "(196)466-6119",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 2.54,
+    "Skills": [
+      "AI/ML",
+      "Java",
+      "React"
+    ],
+    "Job Description Match (%)": 79,
+    "Strength": "Average",
+    "Experience": "4 years"
+  },
+  {
+    "Candidate Name": "Tammy Lee",
+    "Email": "erica05@yahoo.com",
+    "Phone": "001-026-329-4217x411",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 2.8,
+    "Skills": [
+      "Cloud",
+      "Java",
+      "Networking",
+      "React",
+      "AI/ML"
+    ],
+    "Job Description Match (%)": 57,
+    "Strength": "Excellent",
+    "Experience": "6 years"
+  },
+  {
+    "Candidate Name": "John Wilson",
+    "Email": "whitecalvin@hotmail.com",
+    "Phone": "(235)443-5858x2400",
+    "Field of Study": "Information Systems",
+    "CGPA": 3.76,
+    "Skills": [
+      "Embedded Systems",
+      "Networking",
+      "React",
+      "SQL",
+      "AI/ML"
+    ],
+    "Job Description Match (%)": 51,
+    "Strength": "Good",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Mary Kerr",
+    "Email": "thomas57@ellison-house.biz",
+    "Phone": "(928)951-3628x583",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 3.28,
+    "Skills": [
+      "Spring Boot",
+      "Embedded Systems",
+      "Kubernetes",
+      "Networking"
+    ],
+    "Job Description Match (%)": 73,
+    "Strength": "Average",
+    "Experience": "4 years"
+  },
+  {
+    "Candidate Name": "Brian Malone",
+    "Email": "brandonbrown@griffin-peterson.com",
+    "Phone": "103.988.0002",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 3.82,
+    "Skills": [
+      "Cloud",
+      "Java",
+      "Networking",
+      "Kubernetes",
+      "C++"
+    ],
+    "Job Description Match (%)": 87,
+    "Strength": "Average",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Stephen Lee",
+    "Email": "melissagarcia@gmail.com",
+    "Phone": "010-988-4471x2857",
+    "Field of Study": "Civil Engineering",
+    "CGPA": 2.83,
+    "Skills": [
+      "Networking",
+      "Docker",
+      "Embedded Systems",
+      "Spring Boot",
+      "Kubernetes"
+    ],
+    "Job Description Match (%)": 68,
+    "Strength": "Good",
+    "Experience": "2 years"
+  },
+  {
+    "Candidate Name": "Tina Alvarez",
+    "Email": "rromero@lambert.com",
+    "Phone": "246.060.2111x789",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.47,
+    "Skills": [
+      "Python",
+      "React",
+      "Java",
+      "AI/ML"
+    ],
+    "Job Description Match (%)": 69,
+    "Strength": "Strong",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Mrs. Nicole Allen DVM",
+    "Email": "jean11@gmail.com",
+    "Phone": "001-732-836-5274x05669",
+    "Field of Study": "Software Engineering",
+    "CGPA": 2.75,
+    "Skills": [
+      "C++",
+      "Docker",
+      "Python",
+      "Networking"
+    ],
+    "Job Description Match (%)": 80,
+    "Strength": "Outstanding",
+    "Experience": "2 years"
+  },
+  {
+    "Candidate Name": "Jacqueline Beltran",
+    "Email": "ronaldayers@bennett.org",
+    "Phone": "001-489-568-3956",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.05,
+    "Skills": [
+      "Embedded Systems",
+      "Java",
+      "Spring Boot",
+      "SQL"
+    ],
+    "Job Description Match (%)": 93,
+    "Strength": "Average",
+    "Experience": "4 years"
+  },
+  {
+    "Candidate Name": "Stephanie Keith",
+    "Email": "allisonspencer@brown.com",
+    "Phone": "+1-064-126-5211x118",
+    "Field of Study": "Information Systems",
+    "CGPA": 3.97,
+    "Skills": [
+      "Networking",
+      "DevOps",
+      "SQL",
+      "Kubernetes",
+      "Python"
+    ],
+    "Job Description Match (%)": 68,
+    "Strength": "Good",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Justin White",
+    "Email": "julia98@anderson.org",
+    "Phone": "001-077-473-0998",
+    "Field of Study": "Mechanical Engineering",
+    "CGPA": 3.57,
+    "Skills": [
+      "Java",
+      "Spring Boot",
+      "Networking",
+      "AI/ML"
+    ],
+    "Job Description Match (%)": 99,
+    "Strength": "Excellent",
+    "Experience": "1 years"
+  },
+  {
+    "Candidate Name": "Michael Perez",
+    "Email": "alex39@little.com",
+    "Phone": "3924691987",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.64,
+    "Skills": [
+      "Docker",
+      "Cloud",
+      "C++",
+      "AI/ML",
+      "Networking",
+      "Kubernetes"
+    ],
+    "Job Description Match (%)": 85,
+    "Strength": "Average",
+    "Experience": "3 years"
+  },
+  {
+    "Candidate Name": "Nicholas Mitchell",
+    "Email": "weaveromar@morris-love.biz",
+    "Phone": "474.048.3513x93322",
+    "Field of Study": "Mechanical Engineering",
+    "CGPA": 2.7,
+    "Skills": [
+      "Spring Boot",
+      "Networking",
+      "Docker",
+      "SQL",
+      "Python",
+      "Cloud"
+    ],
+    "Job Description Match (%)": 100,
+    "Strength": "Outstanding",
+    "Experience": "6 years"
+  },
+  {
+    "Candidate Name": "Kenneth Johnson",
+    "Email": "oneillamanda@gmail.com",
+    "Phone": "(631)153-7390x089",
+    "Field of Study": "Electrical Engineering",
+    "CGPA": 3.41,
+    "Skills": [
+      "C++",
+      "Cloud",
+      "DevOps",
+      "Java"
+    ],
+    "Job Description Match (%)": 69,
+    "Strength": "Outstanding",
+    "Experience": "0 years"
+  }
+]

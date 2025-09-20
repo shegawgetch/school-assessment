@@ -1,5 +1,11 @@
 import React from "react";
-import { Squares2X2Icon, UserGroupIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
+import {
+  Squares2X2Icon,
+  ClipboardDocumentListIcon,
+  Cog6ToothIcon,
+  PlusCircleIcon,
+  EnvelopeIcon,
+} from "@heroicons/react/24/solid";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -11,9 +17,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   const links = [
     { to: "/", label: "Dashboard", icon: Squares2X2Icon },
-    { to: "/invitations", label: "Invitations", icon: "📧" },
-    { to: "/invitations/new", label: "New Invitation", icon: "➕" },
+    { to: "/invitations", label: "Invitations", icon: EnvelopeIcon },
+    { to: "/invitations/new", label: "New Invitation", icon: PlusCircleIcon },
     { to: "/invitation-settings", label: "Invitation Settings", icon: Cog6ToothIcon },
+    {
+      to: "/candidate-shortlisting",
+      label: "Candidate Shortlisting",
+      icon: ClipboardDocumentListIcon,
+    },
   ];
 
   return (
@@ -43,11 +54,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   className={`flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium transition-colors
                     ${isActive ? "bg-indigo-600 text-white shadow-md" : "text-gray-300 hover:bg-gray-800 hover:text-white"}`}
                 >
-                  {typeof Icon === "string" ? (
-                    <span className="text-2xl">{Icon}</span>
-                  ) : (
-                    <Icon className="h-6 w-6 flex-shrink-0 text-indigo-400" />
-                  )}
+                  <Icon className="h-6 w-6 flex-shrink-0 text-indigo-400" />
                   <span>{label}</span>
                 </Link>
               );

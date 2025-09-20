@@ -7,6 +7,7 @@ import Invitations from './pages/Invitations';
 import NewInvitation from './pages/NewInvitation';
 import InvitationDetails from './pages/InvitationDetails';
 import InvitationSettings from './pages/InvitationSettings';
+import CandidateShortlist from './pages/CandidateShortlist';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,6 +30,7 @@ function App() {
             <Route path="/invitations/new" element={<NewInvitation />} />
             <Route path="/invitations/:id" element={<InvitationDetails />} />
             <Route path="/invitation-settings" element={<InvitationSettings />} />
+            <Route path="/candidate-shortlisting" element={<CandidateShortlist />} />
           </Routes>
         </main>
       </div>
