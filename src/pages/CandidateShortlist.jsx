@@ -5,6 +5,9 @@ import CandidateFilter from "../components/CandidateFilter";
 import CandidateTable from "../components/CandidateTable";
 import CandidateModal from "../components/CandidateModal";
 import useCandidateStore from "../store/candidateStore";
+import { exportToCsv } from "../utils/exportCsv";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/solid"; 
+
 
 export default function CandidateShortlist() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -122,11 +125,41 @@ export default function CandidateShortlist() {
 
     setFilteredCandidates(result);
   }, [filters, sorting]);
+//download logic
+   const handleExport = () => {
+    if (selectedIds.length === 0) {
+      alert("Please select at least one candidate to export.");
+      return;
+    }
+
+    const exportData = filteredCandidates
+      .filter((c, idx) => selectedIds.includes(idx))
+      .map((c) => ({
+        "Candidate Name": c["Candidate Name"] || "-",
+        Email: c.Email || "-",
+        "Field of Study": c["Field of Study"] || "-",
+        CGPA: c.CGPA ?? "-",
+        Skills: Array.isArray(c.Skills) ? c.Skills.join(", ") : "-",
+        "Job Description Match (%)": c["Job Description Match (%)"] ?? "-",
+        Experience: c.Experience || "-",
+      }));
+
+    exportToCsv(exportData, "shortlisted_candidates.csv");
+  };
 
   return (
     <div className="container mx-auto p-1 m-0 pt-0">
-      <h1 className="text-xl font-bold mb-1 mt-0 pt-0">Candidate Shortlist Page</h1>
-
+  <div className="flex justify-between items-center mb-2">
+        <h1 className="text-xl font-bold">Candidate Shortlist Page</h1>
+        
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-2 px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+        >
+          <ArrowDownTrayIcon className="h-5 w-5" />
+          <span>Download</span>
+        </button>
+      </div>
       <CandidateFilter filters={filters} setFilters={setFilters} candidates={candidates} />
 
       <CandidateTable

@@ -43,7 +43,7 @@ export default function CandidateTable({
     if (!sorting.startsWith(key)) return "";
     return sorting.endsWith("asc") ? "⬆️" : "⬇️";
   };
-
+/*
   const handleExport = () => {
     if (selectedIds.length === 0) {
       alert("Please select at least one candidate to export.");
@@ -63,7 +63,7 @@ export default function CandidateTable({
       }));
 
     exportToCsv(exportData);
-  };
+  };*/
 
   const buttonClass =
     "px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-300 disabled:text-gray-600 transition";
@@ -90,9 +90,9 @@ export default function CandidateTable({
               ? "Deselect All"
               : "Select All"}
           </button>
-          <button className={buttonClass} onClick={handleExport}>
+         {/* <button className={buttonClass} onClick={handleExport}>
             Export
-          </button>
+          </button> */}
         </div>
 
         {/* Table */}
