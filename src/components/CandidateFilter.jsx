@@ -48,19 +48,27 @@ export default function CandidateFilter({ filters, setFilters, candidates }) {
         </div>
 
         {/* Field of Study */}
-        <div className="flex-1 min-w-[260px]">
-          <label className="block text-gray-700 font-semibold mb-1">Field of Study</label>
-          <Select
-            isMulti
-            options={fieldOptions}
-            value={fieldOptions.filter((opt) => filters.field.includes(opt.value))}
-            onChange={(selected) =>
-              setFilters({ ...filters, field: selected ? selected.map((s) => s.value) : [] })
-            }
-            placeholder="Select Field(s)"
-            styles={customSelectStyles}
-          />
-        </div>
+        <div className="flex-1 min-w-[265px]">
+  <label className="block text-gray-700 font-semibold mb-1">Field of Study</label>
+  <Select
+    isMulti
+    options={fieldOptions}
+    value={fieldOptions.filter((opt) => filters.field.includes(opt.value))}
+    onChange={(selected) =>
+      setFilters({ ...filters, field: selected ? selected.map((s) => s.value) : [] })
+    }
+    placeholder="Select Field(s)"
+    styles={{
+      ...customSelectStyles,
+      menu: (provided) => ({
+        ...provided,
+        zIndex: 1500, // ensure dropdown is above everything
+      }),
+    }}
+    menuPortalTarget={document.body} // optional, ensures dropdown renders outside table clipping
+  />
+</div>
+
 
         {/* Min CGPA */}
 <div className="flex-auto w-auto max-w-[80px]">

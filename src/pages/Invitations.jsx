@@ -5,6 +5,7 @@ import InvitationTable from '../components/InvitationTable';
 import Modal from '../components/Modal';
 import Papa from 'papaparse';
 import { ArrowDownIcon,ArrowUpTrayIcon , ArrowUpIcon,ArrowUpOnSquareIcon , PlusIcon, DocumentArrowUpIcon } from '@heroicons/react/24/solid';
+import { toast } from 'react-hot-toast';
 
 const Invitations = () => {
   const [invitations, setInvitations] = useState([]);
@@ -359,50 +360,160 @@ const Invitations = () => {
               </div>
 
               {/* Editable Table */}
-              <table className="w-full border text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    {columnsVisible.map(col => <th key={col} className="border px-2 py-1 text-left">{col}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedRows.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={row.errors.name || row.errors.email ? 'bg-red-100' : ''}>
-                      {columnsVisible.map(col => (
-                        <td key={col} className="border px-2 py-1">
-                          <input
-                            type="text"
-                            ref={row.errors[col] ? el => errorRefs.current[`${(currentPage-1)*rowsPerPage+rowIndex}-${col}`] = el : null}
-                            value={row[col]}
-                            onChange={e => handleCellChange((currentPage-1)*rowsPerPage+rowIndex, col, e.target.value)}
-                            className="w-full border rounded px-1 py-1"
-                          />
-                          {row.errors[col] && <p className="text-xs text-red-600">{row.errors[col]}</p>}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-   <div className="mt-4 flex justify-between items-center">
-  {/* Close button on the left */}
-  {/* Save button on the right */}
+       <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-300">
+ {/* Editable Table */}
+<div className="overflow-x-auto shadow-lg rounded-lg border border-gray-300">
+  <table className="min-w-full border-separate border-spacing-0 text-sm">
+    {/* Table Head */}
+    <thead className="bg-gray-100 sticky top-0 z-10">
+      <tr>
+        {columnsVisible.map((col) => (
+          <th
+            key={col}
+            className="border-b border-gray-300 px-3 py-2 text-left font-medium text-gray-700 text-xs tracking-wide uppercase bg-gray-100"
+          >
+            {col}
+          </th>
+        ))}
+      </tr>
+    </thead>
+
+    {/* Table Body */}
+    <tbody>
+      {displayedRows.map((row, rowIndex) => {
+        const globalRowIndex = (currentPage - 1) * rowsPerPage + rowIndex;
+        return (
+          <tr
+            key={globalRowIndex}
+            className={`hover:bg-gray-50 transition-colors duration-150 ${
+              Object.values(row.errors).some(Boolean)
+                ? 'bg-red-50'
+                : rowIndex % 2 === 0
+                ? 'bg-white'
+                : 'bg-gray-50'
+            }`}
+          >
+            {columnsVisible.map((col) => (
+              <td
+                key={col}
+                className="border-b border-r border-gray-200 last:border-r-0"
+              >
+                <input
+                  type="text"
+                  ref={(el) =>
+                    (errorRefs.current[`${globalRowIndex}-${col}`] = el)
+                  }
+                  value={row[col]}
+                  onChange={(e) =>
+                    handleCellChange(globalRowIndex, col, e.target.value)
+                  }
+                  className={`w-full h-full bg-transparent text-sm px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400 border-none`}
+                />
+                {row.errors[col] && (
+                  <p className="text-xs text-red-600 mt-0.5 px-1">
+                    {row.errors[col]}
+                  </p>
+                )}
+              </td>
+            ))}
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
+
+{/* Save / Send Invitations */}
+<div className="mt-4 flex justify-between items-center">
+<button
+  onClick={async () => {
+    let firstErrorFocused = false;
+
+    // Validate all rows
+    const validatedData = parsedData.map((row, rowIndex) => {
+      const errors = {};
+
+      // Name validation
+      if (!row.name || !/^[A-Za-z.\s]+$/.test(row.name)) {
+        errors.name = 'Invalid name';
+      }
+
+      // Email validation
+      if (!row.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
+        errors.email = 'Invalid email';
+      }
+
+      return { ...row, errors };
+    });
+
+    setParsedData(validatedData);
+
+    // Find first error row
+    const firstErrorRowIndex = validatedData.findIndex(
+      (r) => r.errors.name || r.errors.email
+    );
+
+    if (firstErrorRowIndex !== -1) {
+      const pageOfError = Math.floor(firstErrorRowIndex / rowsPerPage) + 1;
+
+      // Switch to the page containing the error
+      setCurrentPage(pageOfError);
+
+      // Wait for DOM to update
+      requestAnimationFrame(() => {
+        const rowOnPage = firstErrorRowIndex % rowsPerPage;
+        const errorCol = validatedData[firstErrorRowIndex].errors.name
+          ? 'name'
+          : 'email';
+        const cellRef = errorRefs.current[`${firstErrorRowIndex}-${errorCol}`];
+        if (cellRef) {
+          cellRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          cellRef.focus();
+        }
+      });
+
+      toast.error('Please fix errors before sending.');
+      return; // stop submission
+    }
+
+    // All rows valid – prepare payload
+    const payload = validatedData.map((r) => ({
+      name: r.name,
+      email: r.email,
+      fieldOfStudy: r.fieldOfStudy,
+      cgpa: r.cgpa,
+      skills: r.skills,
+      jobMatch: r.jobMatch,
+      experience: r.experience,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 19),
+    }));
+
+    try {
+      await invitationAPI.createInvitations(payload);
+      toast.success('Invitations sent successfully!');
+      setShowImportModal(false);
+      fetchInvitations();
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to send invitations.');
+    }
+  }}
+  className="px-4 py-2 m-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center gap-1"
+>
+  Send Invitations
+</button>
+
+
   <button
-    onClick={handleSaveParsedData}
-    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center gap-1"
-  >
-    Save
-   
-  </button>
-    <button
     onClick={() => setShowImportModal(false)}
-    className="px-4 py-2 rounded-md bg-gray-700 text-white hover:bg-gray-600 transition flex items-center gap-1"
+    className="px-4 py-2 m-2 rounded-md bg-gray-700 text-white hover:bg-gray-600 transition flex items-center gap-1"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-    </svg>
     Close
   </button>
+</div>
+
 </div>
 
             </div>

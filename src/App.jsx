@@ -8,6 +8,10 @@ import NewInvitation from './pages/NewInvitation';
 import InvitationDetails from './pages/InvitationDetails';
 import InvitationSettings from './pages/InvitationSettings';
 import CandidateShortlist from './pages/CandidateShortlist';
+import CandidateShortlistMRT from './pages/CandidateShortlistMRT';
+import { Toaster } from 'react-hot-toast';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -15,6 +19,10 @@ function App() {
 
   return (
       <div className="min-h-screen bg-gray-50">
+              <Toaster position="top-right" />
+               <ToastContainer position="top-right" autoClose={3000} />
+
+
         {/* Sidebar */}
         <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
@@ -30,7 +38,7 @@ function App() {
             <Route path="/invitations/new" element={<NewInvitation />} />
             <Route path="/invitations/:id" element={<InvitationDetails />} />
             <Route path="/invitation-settings" element={<InvitationSettings />} />
-            <Route path="/candidate-shortlisting" element={<CandidateShortlist />} />
+            <Route path="/candidate-shortlisting" element={<CandidateShortlistMRT />} />
           </Routes>
         </main>
       </div>
