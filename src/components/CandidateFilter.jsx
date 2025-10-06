@@ -33,23 +33,23 @@ export default function CandidateFilter({ filters, setFilters, candidates }) {
     "border-2 rounded-xl p-2 w-full focus:outline-none focus:ring-2 transition shadow-sm hover:shadow-md";
 
   return (
-    <div className="bg-gradient-to-r from-white via-gray-50 to-white p-6 rounded-2xl shadow-2xl mb-2">
-      <div className="flex flex-wrap gap-5">
+    <div className="bg-gradient-to-r from-white via-gray-50 to-white pl-6 pr-6 pt-2 pb-2 rounded-2xl shadow-2xl mb-1">
+      <div className="flex flex-wrap gap-5 p-0 m-0">
         {/* Search */}
         <div className="flex-1 min-w-[220px]">
-          <label className="block text-gray-700 font-semibold mb-1">Search</label>
+          <label className="block text-gray-700 font-semibold m-0 p-0">Search</label>
           <input
             type="text"
             placeholder="Search by name, email, or skill"
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            className={`${inputClasses} border-gray-300 focus:border-blue-400`}
+            className={`${inputClasses} border-gray-300 focus:border-blue-400 p-0 m-0`}
           />
         </div>
 
         {/* Field of Study */}
         <div className="flex-1 min-w-[265px]">
-  <label className="block text-gray-700 font-semibold mb-1">Field of Study</label>
+  <label className="block text-gray-700 font-semibold m-0 p-0">Field of Study</label>
   <Select
     isMulti
     options={fieldOptions}
@@ -65,14 +65,15 @@ export default function CandidateFilter({ filters, setFilters, candidates }) {
         zIndex: 1500, // ensure dropdown is above everything
       }),
     }}
+    className="m-0 p-0"
     menuPortalTarget={document.body} // optional, ensures dropdown renders outside table clipping
   />
 </div>
 
 
         {/* Min CGPA */}
-<div className="flex-auto w-auto max-w-[80px]">
-  <label className="block text-gray-700 font-semibold mb-1">Min CGPA</label>
+<div className="flex-auto w-auto max-w-[80px] p-0 m-0" >
+  <label className="block text-gray-700 font-semibold m-0 p-0">Min CGPA</label>
   <input
     type="number"
     min={0}
@@ -80,13 +81,13 @@ export default function CandidateFilter({ filters, setFilters, candidates }) {
     step={0.1}
     value={filters.minCgpa}
     onChange={(e) => setFilters({ ...filters, minCgpa: Number(e.target.value) })}
-    className={`${inputClasses} border-gray-300 focus:border-green-400`}
+    className={`${inputClasses} border-gray-300 focus:border-green-400 m-0`}
   />
 </div>
 
 
         {/* Job Match */}
-        <div className="flex-1 min-w-[160px]">
+        <div className="flex-1 min-w-[160px] p-0 m-0">
           <label className="block text-gray-700 font-semibold mb-1">
             Job Match %: {filters.jobMatchRange[0]}–{filters.jobMatchRange[1]}
           </label>
@@ -98,7 +99,7 @@ export default function CandidateFilter({ filters, setFilters, candidates }) {
             onChange={(e) =>
               setFilters({ ...filters, jobMatchRange: [Number(e.target.value), filters.jobMatchRange[1]] })
             }
-            className="w-full mb-1 accent-blue-500"
+            className="w-full mb-1 accent-blue-500 p-0 m-0"
           />
           <input
             type="range"
@@ -108,17 +109,17 @@ export default function CandidateFilter({ filters, setFilters, candidates }) {
             onChange={(e) =>
               setFilters({ ...filters, jobMatchRange: [filters.jobMatchRange[0], Number(e.target.value)] })
             }
-            className="w-full accent-blue-500"
+            className="w-full accent-blue-500 p-0 m-0"
           />
         </div>
 
         {/* Experience */}
-        <div className="flex-1 min-w-[160px]">
-          <label className="block text-gray-700 font-semibold mb-1">Experience</label>
+        <div className="flex-1 min-w-[160px] p-0">
+          <label className="block text-gray-700 font-semibold m-0 p-0">Experience</label>
           <select
             value={filters.experience}
             onChange={(e) => setFilters({ ...filters, experience: e.target.value })}
-            className={`${inputClasses} border-gray-300 focus:border-purple-400`}
+            className={`${inputClasses} border-gray-300 focus:border-purple-400 m-0 p-0`}
           >
             <option value="">Any</option>
             <option value="0">0 yrs</option>

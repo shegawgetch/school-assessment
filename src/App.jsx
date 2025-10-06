@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Topbar from './components/Topbar';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
-import Invitations from './pages/Invitations';
 import NewInvitation from './pages/NewInvitation';
 import InvitationDetails from './pages/InvitationDetails';
 import InvitationSettings from './pages/InvitationSettings';
@@ -12,6 +11,7 @@ import CandidateShortlistMRT from './pages/CandidateShortlistMRT';
 import { Toaster } from 'react-hot-toast';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Invitations from './pages/Invitations';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -30,7 +30,7 @@ function App() {
         <Topbar toggleSidebar={toggleSidebar} />
 
         {/* Main content */}
-        <main className=" md:ml-64 p-6 pt-3 transition-all duration-200">
+        <main className=" md:ml-64 p-6 pt-2 transition-all duration-200">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />

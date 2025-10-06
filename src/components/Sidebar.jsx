@@ -18,7 +18,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const links = [
     { to: "/", label: "Dashboard", icon: Squares2X2Icon },
     { to: "/invitations", label: "Invitations", icon: EnvelopeIcon },
-    { to: "/invitations/new", label: "New Invitation", icon: PlusCircleIcon },
+   // { to: "/invitations/new", label: "New Invitation", icon: PlusCircleIcon },
     { to: "/invitation-settings", label: "Invitation Settings", icon: Cog6ToothIcon },
     {
       to: "/candidate-shortlisting",

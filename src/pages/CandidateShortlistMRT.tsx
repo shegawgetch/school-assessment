@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useMediaQuery, Box, Button, Typography } from '@mui/material';
+import { useMediaQuery, Box, Button, Typography, useTheme } from '@mui/material';
+import Grid from "@mui/material/Grid";
 import {
   MaterialReactTable,
   type MRT_ColumnDef,
@@ -15,6 +16,9 @@ import { exportToCsv } from '../utils/exportCsv';
 import { invitationAPI } from '../api/axiosService';
 import { ArrowUpTrayIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
+import { GlobalStyles } from "@mui/material";
+
+
 
 export default function CandidateShortlistMRT() {
   const isDesktop = useMediaQuery('(min-width:1200px)');
@@ -112,7 +116,7 @@ export default function CandidateShortlistMRT() {
 
     if (sorting) {
       const [key, dir] = sorting.split('_');
-      result.sort((a, b) => {
+      result.sort((a: any, b: any) => {
         let valA = a[key] ?? '';
         let valB = b[key] ?? '';
         if (typeof valA === 'string') valA = valA.toLowerCase();
@@ -135,7 +139,7 @@ export default function CandidateShortlistMRT() {
     {
       accessorKey: 'Skills',
       header: 'Skills',
-      Cell: ({ cell }) => (Array.isArray(cell.getValue()) ? cell.getValue().join(', ') : '-'),
+      Cell: ({ cell }: any) => (Array.isArray(cell.getValue()) ? cell.getValue().join(', ') : '-'),
     },
     { accessorKey: 'Job Description Match (%)', header: 'Job Match (%)' },
     { accessorKey: 'Strength', header: 'Strength' },
@@ -160,7 +164,7 @@ export default function CandidateShortlistMRT() {
       CGPA: c.CGPA ?? '-',
       Skills: Array.isArray(c.Skills) ? c.Skills.join(', ') : '-',
       'Job Description Match (%)': c['Job Description Match (%)'] ?? '-',
-       Strength: c.Strength || '-',
+      Strength: c.Strength || '-',
       Experience: c.Experience || '-',
     }));
 
@@ -172,68 +176,126 @@ export default function CandidateShortlistMRT() {
     () => filteredCandidates.map((c, idx) => ({ ...c, id: idx })),
     [filteredCandidates]
   );
+  const headerRef = useRef<HTMLDivElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const [tableMaxHeight, setTableMaxHeight] = useState('calc(100vh - 200px)'); // fallback
+
+  const [tableOffsetTop, setTableOffsetTop] = useState(0);
+
+  useEffect(() => {
+    const calculateMaxHeight = () => {
+      const headerHeight = headerRef.current?.offsetHeight || 0;
+      const filterHeight = filterRef.current?.offsetHeight || 0;
+      const margin = 16;
+
+      setTableMaxHeight(`calc(100vh - ${headerHeight + filterHeight + margin}px)`);
+      setTableOffsetTop(headerHeight + filterHeight); // 👈 for sticky offset
+    };
+
+    calculateMaxHeight();
+    window.addEventListener('resize', calculateMaxHeight);
+    return () => window.removeEventListener('resize', calculateMaxHeight);
+  }, []);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // true if screen < sm
+  //for loading state spinner
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate fetch delay
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  }, []);
 
   return (
-    <Box className="container mx-auto p-1 m-0 pt-0">
+    <Box sx={{
+      // height: '100vh', // full viewport minus header
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
       {/* Top right download button */}
-      <Box className="flex justify-between items-center mb-2">
-        <Typography variant="h5">Candidate ShortListing Page</Typography>
+      <Box ref={headerRef} className="w-full px-2 sm:px-4 md:px-6">
+        {/* Header Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-2 mt-0">
+          {/* Page Title */}
+          <p className="font-semibold text-gray-700 text-base sm:text-sm md:text-md lg:text-xl">
+            Candidate Shortlisting Page
+          </p>
 
-        <div className="flex gap-2">
-          {/* Submit Selected */}
-          <Button
-            variant="outlined"
-            color="secondary" sx={{ textTransform: 'none' }}
-            startIcon={<ArrowUpTrayIcon className="h-5 w-5" />}
-            onClick={async () => {
-              const selectedRows = candidatesWithId.filter((c) => rowSelection[c.id]);
-              if (!selectedRows.length) {
-                toast.error('Please select at least one candidate.');
-                return;
-              }
+          {/* Action Buttons */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:justify-end gap-2 sm:gap-3 md:gap-4">
+            {/* Send Invitation */}
+            <Button
+              variant="outlined"
+              color="secondary"
+              className="w-full md:w-auto flex items-center justify-center gap-2 rounded-xl normal-case px-4 sm:px-3 py-1 sm:py-.5 font-semibold transition-all duration-200 shadow-sm hover:shadow-lg hover:bg-gray-50"
+              sx={{ textTransform: 'none' }}
+              startIcon={<ArrowUpTrayIcon className="h-4 sm:h-5 w-4 sm:w-5 text-secondary-600" />}
+              onClick={async () => {
+                const selectedRows = candidatesWithId.filter((c) => rowSelection[c.id]);
+                if (!selectedRows.length) {
+                  toast.error("Please select at least one candidate.");
+                  return;
+                }
 
-              // Transform row data using only existing table columns
-              const payload = selectedRows.map((c) => ({
-                name: c['Candidate Name'] || 'Unknown Candidate',
-                email: c.Email || '',
-                phone: c.Phone || '',
-                fieldOfStudy: c['Field of Study'] || '',
-                cgpa: c.CGPA ?? null,
-                skills: Array.isArray(c.Skills) ? c.Skills : [],
-                experience: c.Experience || '',
-                jobMatch: c['Job Description Match (%)'] ?? 0,
-                strength: c.Strength || '',
-              }));
+                const payload = selectedRows.map((c) => ({
+                  name: c["Candidate Name"] || "Unknown Candidate",
+                  email: c.Email || "",
+                  phone: c.Phone || "",
+                  fieldOfStudy: c["Field of Study"] || "",
+                  cgpa: c.CGPA ?? null,
+                  skills: Array.isArray(c.Skills) ? c.Skills : [],
+                  experience: c.Experience || "",
+                  jobMatch: c["Job Description Match (%)"] ?? 0,
+                  strength: c.Strength || "",
+                }));
 
-              const toastId = toast.loading('Submitting candidates...');
+                const toastId = toast.loading("Submitting candidates...");
+                try {
+                  await invitationAPI.createInvitations(payload);
+                  toast.success("Selected candidates submitted successfully!", { id: toastId });
+                } catch (err) {
+                  console.error(err);
+                  toast.error("Error submitting candidates.", { id: toastId });
+                }
+              }}
+            >
+              Send Invitation
+            </Button>
 
-              try {
-                await invitationAPI.createInvitations(payload);
-                toast.success('Selected candidates submitted successfully!', { id: toastId });
-              } catch (err) {
-                console.error(err);
-                toast.error('Error submitting candidates.', { id: toastId });
-              }
-            }}
-          >
-            Send Invitation
-          </Button>
-
-          {/* Download Selected */}
-          <Button
-            variant="contained"
-            color="primary" sx={{ textTransform: 'none' }}
-            startIcon={<ArrowDownTrayIcon className="h-5 w-5" />}
-            onClick={handleExportSelected}
-          >
-            Download
-          </Button>
+            {/* Download Selected */}
+            <Button
+              variant="contained"
+              color="primary"
+              className="w-full md:w-auto flex items-center justify-center gap-2 rounded-xl normal-case px-4 sm:px-3 py-1 sm:py-.5 font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-600"
+              sx={{ textTransform: 'none' }}
+              startIcon={<ArrowDownTrayIcon className="h-4 sm:h-5 w-4 sm:w-5 text-white" />}
+              onClick={handleExportSelected}
+            >
+              Download
+            </Button>
+          </div>
         </div>
       </Box>
 
       {/* Filter */}
-      <CandidateFilter filters={filters} setFilters={setFilters} candidates={candidates} />
+      <Box ref={filterRef} className="w-full mb-0 m-0  px-2 sm:px-0 p:0"
+      >
 
+        <CandidateFilter filters={filters} setFilters={setFilters} candidates={candidates} />
+      </Box>
+
+      <GlobalStyles
+        styles={{
+          "thead.MuiTableHead-root": {
+            position: "sticky",
+            top: 0, // height of custom toolbar in px
+            zIndex: 2,
+            backgroundColor: "white",
+          },
+        }}
+      />
       <MaterialReactTable
         columns={columns}
         data={candidatesWithId}
@@ -247,10 +309,46 @@ export default function CandidateShortlistMRT() {
         rowNumberDisplayMode="static"
         enablePagination
         enableTopToolbar
-        enableBottomToolbar={false}
+        enableBottomToolbar={true}
         state={{
           rowSelection,
           pagination,
+          //isLoading: loading, // ✅ built-in spinner
+        }}
+        muiTablePaperProps={{
+          component: Box, // 👈 turns MRT’s root Paper into a Box
+          className: "shadow-md rounded-lg border border-gray-200", // Tailwind styles
+          sx: {
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          },
+        }}
+        muiTableContainerProps={{
+          sx: {
+            maxHeight: tableMaxHeight,
+            overflowY: "auto",
+            overflowX: "auto",
+            position: "relative", // important for sticky children
+
+
+          },
+
+        }}
+        muiTableProps={{
+          stickyHeader: true, // <- this helps MUI Table
+          sx: {
+            tableLayout: "auto",
+            minWidth: "700px",
+          },
+        }}
+        muiTableHeadCellProps={{
+          sx: {
+            position: "sticky",
+            top: 0, // same as thead.MuiTableHead-root
+            zIndex: 3,
+            backgroundColor: "white",
+          },
         }}
         muiTableBodyRowProps={({ row }) => ({
           onClick: (e) => {
@@ -258,30 +356,39 @@ export default function CandidateShortlistMRT() {
             if ((e.target as HTMLElement).closest('input[type="checkbox"]')) return;
             setSelectedCandidate(row.original); // open modal with row data
           },
-          sx: { cursor: 'pointer' }, // make row look clickable
+          sx: { cursor: 'pointer', wordBreak: 'break-word' },
         })}
         onPaginationChange={setPagination} // built-in pagination
         onRowSelectionChange={setRowSelection}
         getRowId={(row) => row.id.toString()}
         onRowClick={(row) => setSelectedCandidate(filteredCandidates[row.index])}
         renderTopToolbarCustomActions={({ table }) => (
-          <div className="flex items-center gap-4">
-            {/* Select All / Deselect All */}
-            <button
-              onClick={() => table.toggleAllRowsSelected()}
-              className="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200"
-            >
-              {table.getIsAllRowsSelected() ? 'Deselect All' : 'Select All'}
-            </button>
+          <div
+            className="sticky top-0 z-20 p-1 
+               flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+          >
+            {/* Left group: Select All + Rows per page */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              {/* Select All / Deselect All */}
+              <button
+                onClick={() => table.toggleAllRowsSelected()}
+                className={`px-4 py-1 rounded-lg font-medium transition
+          ${table.getIsAllRowsSelected()
+                    ? "bg-red-500 hover:bg-red-600 text-white shadow-sm"
+                    : "bg-blue-500 hover:bg-blue-600 text-white shadow-sm"}`}
+              >
+                {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
+              </button>
 
-            {/* Rows per page */}
-            <div>
-              <label>
-                Rows per page:
+              {/* Rows per page */}
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-gray-600">Rows per page:</span>
                 <select
                   value={table.getState().pagination.pageSize}
                   onChange={(e) => table.setPageSize(Number(e.target.value))}
-                  className="ml-2 border rounded px-1 py-0.5"
+                  className="px-3 py-1 rounded-lg border border-gray-300 
+                     bg-gray-50 hover:bg-gray-100 text-sm 
+                     focus:ring-2 focus:ring-blue-400 outline-none transition"
                 >
                   {[5, 10, 20, 50].map((size) => (
                     <option key={size} value={size}>
@@ -289,23 +396,32 @@ export default function CandidateShortlistMRT() {
                     </option>
                   ))}
                 </select>
-              </label>
+              </div>
             </div>
 
-            {/* Page navigation */}
-            <div className="ml-auto flex items-center gap-1">
+            {/* Right group: Pagination */}
+            <div className="flex items-center gap-4 justify-center md:justify-end text-sm w-full md:w-auto">
+              {/* Prev Button */}
               <button
                 onClick={() =>
                   table.setPageIndex(Math.max(table.getState().pagination.pageIndex - 1, 0))
                 }
                 disabled={table.getState().pagination.pageIndex === 0}
-                className="px-2 py-1 border rounded bg-gray-100 hover:bg-gray-200"
+                className={`px-2 py-1 rounded-lg font-medium transition
+          ${table.getState().pagination.pageIndex === 0
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-orange-500 text-white hover:bg-orange-600 shadow-sm"}`}
               >
                 Prev
               </button>
-              <span>
-                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+
+              {/* Page Info */}
+              <span className="text-gray-700">
+                Page <span className="font-medium">{table.getState().pagination.pageIndex + 1}</span>
+                of <span className="font-medium">{table.getPageCount()}</span>
               </span>
+
+              {/* Next Button */}
               <button
                 onClick={() =>
                   table.setPageIndex(
@@ -315,16 +431,19 @@ export default function CandidateShortlistMRT() {
                     )
                   )
                 }
-                disabled={
-                  table.getState().pagination.pageIndex === table.getPageCount() - 1
-                }
-                className="px-2 py-1 border rounded bg-gray-100 hover:bg-gray-200"
+                disabled={table.getState().pagination.pageIndex === table.getPageCount() - 1}
+                className={`px-2 py-1 rounded-lg font-medium transition
+          ${table.getState().pagination.pageIndex === table.getPageCount() - 1
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-green-500 text-white hover:bg-green-600 shadow-sm"}`}
               >
                 Next
               </button>
             </div>
           </div>
         )}
+
+
       />
 
       {selectedCandidate && (

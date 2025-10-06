@@ -1,5 +1,10 @@
 @import "tailwindcss";
-body, html, #root {
+
+body,
+html,
+#root {
   margin: 0;
   padding: 0;
+  font-family: 'Inter', sans-serif;
+
 }
