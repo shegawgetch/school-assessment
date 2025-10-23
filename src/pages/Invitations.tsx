@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { PlusIcon, ArrowUpTrayIcon } from '@heroicons/react/24/solid';
-import { GlobalStyles, Box } from '@mui/material';
+import { GlobalStyles, Box, Button } from '@mui/material';
 import { MaterialReactTable, type MRT_ColumnDef, type MRT_RowSelectionState } from 'material-react-table';
 import Modal from '../components/Modal';
 import StatusBadge from '../components/StatusBadge';
@@ -15,6 +15,8 @@ import {
 } from '@heroicons/react/24/solid';
 import { invitationAPI } from '../api/axiosService';
 import Papa from 'papaparse';
+import Select from "react-select";
+
 
 
 interface Invitation {
@@ -119,7 +121,7 @@ const Invitations = () => {
     { accessorKey: 'name', header: 'Name' },
     { accessorKey: 'email', header: 'Email' },
     { accessorKey: 'assessmentName', header: 'Assessment' },
-    { accessorKey: 'status', header: 'Status', Cell: ({ row }) => <StatusBadge status={row.original.status} /> },
+    { accessorKey: 'status', header: 'Status', size: 25, Cell: ({ row }) => <StatusBadge status={row.original.status} /> },
     { accessorKey: 'sentAt', header: 'Sent At', Cell: ({ row }) => new Date(row.original.sentAt).toLocaleString() },
     { accessorKey: 'expiresAt', header: 'Expires At', Cell: ({ row }) => new Date(row.original.expiresAt).toLocaleString() },
     {
@@ -130,7 +132,7 @@ const Invitations = () => {
           {/* Resend */}
           <button
             onClick={() => handleAction('resend', row.original.id)}
-            className="text-blue-600 hover:text-blue-900 p-1 rounded-md transition"
+            className="text-blue-500 hover:text-blue-400 p-1 rounded-md transition"
             title="Resend Invitation"
           >
             <ArrowPathIcon className="h-5 w-5" />
@@ -139,7 +141,7 @@ const Invitations = () => {
           {/* Remind */}
           <button
             onClick={() => handleAction('remind', row.original.id)}
-            className="text-yellow-600 hover:text-yellow-900 p-1 rounded-md transition"
+            className="text-yellow-500 hover:text-yellow-400 p-1 rounded-md transition"
             title="Send Reminder"
           >
             <BellAlertIcon className="h-5 w-5" />
@@ -148,7 +150,7 @@ const Invitations = () => {
           {/* Complete */}
           <button
             onClick={() => handleAction('complete', row.original.id)}
-            className="text-green-600 hover:text-green-900 p-1 rounded-md transition"
+            className="text-green-600 hover:text-green-400 p-1 rounded-md transition"
             title="Mark as Completed"
           >
             <CheckCircleIcon className="h-5 w-5" />
@@ -157,7 +159,7 @@ const Invitations = () => {
           {/* Expire */}
           <button
             onClick={() => handleAction('expire', row.original.id)}
-            className="text-red-600 hover:text-red-900 p-1 rounded-md transition"
+            className="text-red-600 hover:text-red-400 p-1 rounded-md transition"
             title="Expire Invitation"
           >
             <XCircleIcon className="h-5 w-5" />
@@ -389,78 +391,190 @@ const Invitations = () => {
       toast.error('Failed to send invitation.');
     }
   }
-/*
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-*/
+  const statusOptions = [
+    { value: "", label: "All Statuses" },
+    { value: "sent", label: "Sent" },
+    { value: "accepted", label: "Accepted" },
+    { value: "completed", label: "Completed" },
+    { value: "expired", label: "Expired" },
+  ];
+  /*
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      );
+    }
+  */
   return (
-    <div className="space-y-2">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0 mb-2">
+    <div className="space-y-2 min-h-screen flex flex-col p-0 bg-[var(--secondary)] dark:bg-[var(--background)]
+    text-[var(--color-text-primary)] dark:text-[var(--color-text-inverted)]
+    transition-colors duration-300 mb-0 pb-0
+  ">
+      {/* Left: Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0 mb-1">
         {/* Left: Header */}
         <div>
-          <p className="text-gray-700 font-semibold text-base md:text-lg">
+          <p className="text-[var(--foreground)] dark:text-[var(--foreground)] leading-tight font-semibold text-base md:text-lg">
             Manage and track all invitations
           </p>
         </div>
 
         {/* Right: Actions */}
         <div className="flex flex-wrap gap-2">
-         {/* <button
-            onClick={() => navigate('/invitations/new')}
-            className="bg-blue-600 text-white px-3 py-.5 md:px-4 md:py-1 rounded-lg hover:bg-blue-700 shadow-sm flex items-center gap-1 transition duration-200"
-          >
-            <PlusIcon className="h-4 w-4 md:h-5 md:w-5" /> New Invitation
-          </button> */}
-          <button
+          {/* Send Invitation Button */}
+          {/* Send Invitation Button */}
+          {/* Send Invitation Button */}
+          <Button
+            variant="contained"
             onClick={() => setShowModal(true)}
-            className="bg-gray-100 text-gray border px-3 py-.5 md:px-4 md:py-1 rounded-lg hover:bg-gray-400 shadow-sm flex items-center gap-1 transition duration-200"
-          >  <PlusIcon className="h-4 w-4 md:h-5 md:w-5" />
-            Send Invitation
-          </button>
-
-
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="bg-blue-600 text-white px-3 py-.5 md:px-4 md:py-1 rounded-lg hover:bg-green-700 shadow-sm flex items-center gap-1 transition duration-200"
+            className="
+    bg-[var(--primary)] 
+    dark:bg-[var(--primary)] 
+    text-[var(--primary-foreground)] 
+    dark:text-[var(--primary-foreground)] 
+    px-4 py-2 rounded-lg 
+    shadow-md 
+    font-semibold 
+    flex items-center gap-2 
+    transition-all duration-300 ease-in-out
+    hover:bg-[oklch(0.25 0.05 0)] 
+    dark:hover:bg-[oklch(0.35 0.05 0)] 
+    hover:scale-105 
+    focus:outline-none focus:ring-2 
+    focus:ring-[var(--primary)] focus:ring-opacity-50
+  "
+            sx={{ textTransform: "none" }}
+            startIcon={<PlusIcon className="h-5 w-5" />}
           >
-            <ArrowUpTrayIcon className="h-4 w-4 md:h-5 md:w-5" /> Import CSV
-          </button>
+            Send Invitation
+          </Button>
+
+          {/* Import CSV Button */}
+          <Button
+            variant="contained"
+            onClick={() => setShowImportModal(true)}
+            sx={{ textTransform: 'none', backgroundColor: '#10B981' }}
+            className="
+    bg-[var(--secondary)] 
+    dark:bg-[var(--secondary)] 
+    text-[var(--secondary-foreground)] 
+    dark:text-[var(--secondary-foreground)] 
+    px-4 py-2 rounded-lg 
+    shadow-md 
+    font-semibold 
+    flex items-center gap-2 
+    transition-all duration-300 ease-in-out
+    hover:bg-[oklch(0.85 0.05 0)] 
+    dark:hover:bg-[oklch(0.3 0.05 0)] 
+    hover:scale-105 
+    focus:outline-none focus:ring-2 
+    focus:ring-[var(--secondary)] focus:ring-opacity-50
+  "
+          >
+            <ArrowUpTrayIcon className="h-5 w-5 " />
+            Import CSV
+          </Button>
         </div>
       </div>
 
-
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 pt-2 pb-2 mt-1 mb-1 flex gap-4 flex-wrap justify-end">
-        {/*<div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-          <input
-            type="text"
-            value={filters.search}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
-            placeholder="Search by name, email or assessment..."
-            className="w-64 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>*/}
-        <div>
-          <label className="text-md pr-2 font-medium text-gray-700 mb-2">Status</label>
-          <select
-            value={filters.status}
-            onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="w-48 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <div className="
+      flex flex-wr                                                                                                                                                                ap justify-end items-center gap-4
+      bg-[var(--card)] dark:bg-[var(--card)]
+      border border-[var(--color-border-light)] dark:border-[var(--color-border-dark)]
+      rounded-lg shadow-sm px-4 py-2
+      transition-colors duration-300 mb-1
+    ">
+
+
+        {/* Status Select Inline */}
+        <div className="flex items-center gap-2">
+          <label
+            className="text-[var(--foreground)] dark:text-[var(--foreground)] leading-tight font-medium text-sm whitespace-nowrap"
           >
-            <option value="">All Statuses</option>
-            <option value="sent">Sent</option>
-            <option value="accepted">Accepted</option>
-            <option value="completed">Completed</option>
-            <option value="expired">Expired</option>
-          </select>
+            Status
+          </label>
+          <Select
+            options={statusOptions}
+            value={statusOptions.find((opt) => opt.value === filters.status)}
+            onChange={(selected) =>
+              handleFilterChange("status", selected ? selected.value : "")
+            }
+            placeholder="Select Status"
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                minHeight: "44px",
+                minWidth: 200,
+                borderRadius: "10px",
+                borderColor: "var(--border)",
+                backgroundColor: "white",       // always white
+                color: "#000000",                // static dark text
+                "&:hover": { borderColor: "blue" },
+                boxShadow: "none",
+                transition: "all 0.2s ease",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                color: "#4B5563",               // medium gray arrow
+                "& svg": { fill: "#4B5563" },
+                padding: 4,
+              }),
+              indicatorSeparator: (provided) => ({
+                ...provided,
+                backgroundColor: "#D1D5DB",     // light gray separator
+              }),
+              menu: (provided) => ({
+                ...provided,
+                backgroundColor: "var(--primary)",
+                color: "#000000",
+                borderRadius: "10px",
+                zIndex: 9999,
+              }),
+              menuList: (provided) => ({
+                ...provided,
+                maxHeight: "200px",
+                overflowY: "auto",
+                backgroundColor: "var(--secondary)",
+                color: "var(--foreground)",
+
+              }),
+              option: (provided, state) => ({
+                ...provided,
+                backgroundColor: state.isFocused ? "var(--muted)" : "var(--secondary)",
+                color: "var(--foreground)",
+                cursor: "pointer",
+                ":hover": {
+                  backgroundColor: "var(--primary)",
+                  color: "var(--secondary)",
+                }
+              }),
+              placeholder: (provided) => ({
+                ...provided,
+                color: "#6B7280",               // medium gray
+              }),
+              input: (provided) => ({
+                ...provided,
+                color: "#000000",
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "#000000",
+              }),
+              menuPortal: (base) => ({
+                ...base,
+                zIndex: 9999,
+                borderRadius: "12px",
+                backgroundColor: "var(--secondary)",
+                color: "#000000",
+              }),
+            }}
+            menuPortalTarget={document.body}
+          />
         </div>
+
         {/*
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Per Page</label>
@@ -480,158 +594,258 @@ const Invitations = () => {
         styles={{
           "thead.MuiTableHead-root": {
             position: "sticky",
-            top: 0, // height of custom toolbar in px
+            top: 0, // height of top toolbar
             zIndex: 2,
-            backgroundColor: "white",
+            backgroundColor: "var(--background)",
+            color: "var(--color-text-primary)",
           },
         }}
       />
-      <MaterialReactTable
-        columns={columns}
-        data={filteredInvitations}
-        //enableRowSelection               // enable selection
-        // enableMultiRowSelection          // allow multiple selection
-        enableColumnFilters={true}
-        enableGlobalFilter={true}
-        enableSelectAll={false} // removes header checkbox
-        // enableRowSelectionOnClick
-        positionActionsColumn="first"
-        rowNumberDisplayMode="static"
-        enablePagination
-        enableTopToolbar
-        enableBottomToolbar={true}
-        state={{
-          rowSelection,
-          pagination,
-        }}
-        muiTablePaperProps={{
-          component: Box, // 👈 turns MRT’s root Paper into a Box
-          className: "shadow-md rounded-lg border border-gray-200", // Tailwind styles
-          sx: {
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-          },
-        }}
-        muiTableContainerProps={{
-          sx: {
-            maxHeight: tableMaxHeight,
-            overflowY: "auto",
-            overflowX: "auto",
-            position: "relative", // important for sticky children
+      {/* Table */}
+      <div className="p-0 min-h-screen transition-colors duration-300 rounded-xl mb-0">
+        <MaterialReactTable
+          columns={columns}
+          data={filteredInvitations}
+          enableColumnFilters
+          enableGlobalFilter
+          enablePagination
+          enableTopToolbar
+          enableBottomToolbar
+          state={{ rowSelection, pagination }}
+          onPaginationChange={setPagination}
+          onRowSelectionChange={setRowSelection}
+          getRowId={(row) => row.id.toString()}
 
+          // Table card container
+          muiTablePaperProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              border: '2px solid var(--border)',
+              borderRadius: '12px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease-in-out',
+            },
+          }}
 
-          },
+          // Table container
+          muiTableContainerProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              maxHeight: tableMaxHeight,
+              overflowY: 'auto',
+              overflowX: 'auto',
+              transition: 'all 0.3s ease-in-out',
+            },
+          }}
 
-        }}
-        muiTableProps={{
-          stickyHeader: true, // <- this helps MUI Table
-          sx: {
-            tableLayout: "auto",
-            minWidth: "700px",
-          },
-        }}
-        muiTableHeadCellProps={{
-          sx: {
-            position: "sticky",
-            top: 0, // same as thead.MuiTableHead-root
-            zIndex: 3,
-            backgroundColor: "white",
-          },
-        }}
-        /* muiTableBodyRowProps={({ row }) => ({
-           onClick: (e) => {
-             // prevent modal if user clicks checkbox
-             if ((e.target as HTMLElement).closest('input[type="checkbox"]')) return;
-             setSelectedCandidate(row.original); // open modal with row data
-           },
-           sx: { cursor: 'pointer', wordBreak: 'break-word' },
-         })}*/
-        onPaginationChange={setPagination} // built-in pagination
-        onRowSelectionChange={setRowSelection}
-        getRowId={(row) => row.id.toString()}
-        // onRowClick={(row) => setSelectedCandidate(filteredCandidates[row.index])}
-        renderTopToolbarCustomActions={({ table }) => (
-          <div
-            className="sticky top-0 z-20 p-1 
-               flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-          >
-            {/* Left group: Select All + Rows per page */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              {/* Select All / Deselect All */}
-              <button
-                onClick={() => table.toggleAllRowsSelected()}
-                className={`px-4 py-1 rounded-lg font-medium transition
-          ${table.getIsAllRowsSelected()
-                    ? "bg-red-500 hover:bg-red-600 text-white shadow-sm"
-                    : "bg-blue-500 hover:bg-blue-600 text-white shadow-sm"}`}
-              >
-                {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
-              </button>
+          // Table
+          muiTableProps={{
+            stickyHeader: true,
+            sx: {
+              tableLayout: 'auto',
+              minWidth: '700px',
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              borderCollapse: 'separate', // ensures row borders visible
+              borderSpacing: '0 4px', // spacing between rows
+              transition: 'all 0.3s ease-in-out',
+            },
+          }}
 
-              {/* Rows per page */}
+          // Table head cells
+          muiTableHeadCellProps={{
+            sx: {
+              position: 'sticky',
+              padding: 0,
+              pl: 1,
+              bgcolor: 'var(--secondary)',
+              color: 'var(--secondary-foreground)',
+              fontWeight: 600,
+              borderBottom: '2px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+              '& .MuiSvgIcon-root': {
+                color: 'var(--secondary-foreground) !important', // fixes sort icon color
+              },
+              '& .MuiTableSortLabel-root': {
+                color: 'var(--secondary-foreground) !important',
+                '&:hover': {
+                  color: 'var(--primary)',
+                },
+                '& .MuiTableSortLabel-icon': {
+                  color: 'var(--secondary-foreground) !important', // ensures sort icon visible
+                },
+              },
+              '& .MuiMenuItem-root, & .MuiMenuItem-icon': {
+                color: 'var(--card-foreground) !important', // fixes three-dot menu icon
+              },
+            },
+          }}
+
+          // Table body cells
+          muiTableBodyCellProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              padding: 0,
+              pl: 1,
+              borderBottom: '1px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+            },
+          }}
+
+          // Table body rows
+          muiTableBodyRowProps={{
+            sx: {
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              transition: 'background-color 0.3s ease-in-out',
+              '&:hover': {
+                bgcolor: 'var(--muted)',
+              },
+            },
+          }}
+
+          // Top Toolbar dark/light mode
+          muiToolbarProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              borderBottom: '2px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+              '& .MuiButton-root, & .MuiInputBase-root': {
+                color: 'var(--card-foreground)',
+              },
+            },
+          }}
+
+          // Bottom Pagination Toolbar dark/light mod
+          // ✅ Top toolbar (search/filter)
+          muiTopToolbarProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              borderBottom: '1.5px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+              padding: '0px',
+              paddingX: '10px',
+              '& .MuiButton-root, & .MuiInputBase-root, & .MuiIconButton-root': {
+                color: 'var(--card-foreground)',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border)',
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--ring)',
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--ring)',
+              },
+            },
+          }}
+
+          // ✅ Bottom toolbar (pagination)
+          muiBottomToolbarProps={{
+            sx: {
+              bgcolor: 'var(--se)',
+              color: 'var(--card-foreground)',
+              borderTop: '1.5px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+              paddingY: '6px',
+              '& .MuiButtonBase-root, & .MuiSvgIcon-root, & .MuiTypography-root': {
+                color: 'var(--card-foreground)',
+              },
+              '& .Mui-disabled': {
+                color: 'var(--muted-foreground)',
+              },
+            },
+          }}
+
+          // ✅ Pagination select & icons
+          muiTablePaginationProps={{
+            SelectProps: {
+              sx: {
+                bgcolor: 'var(--card)',
+                color: 'var(--card-foreground)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                '&:hover': {
+                  borderColor: 'var(--ring)',
+                },
+              },
+            },
+            IconButtonProps: {
+              sx: {
+                color: 'var(--card-foreground)',
+                '&:hover': {
+                  color: 'var(--primary)',
+                },
+              },
+            },
+          }}
+
+          // Custom Top Toolbar (optional)
+          renderTopToolbarCustomActions={({ table }) => (
+            <div className="
+        flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-2
+        bg-[var(--card)] text-[var(--card-foreground)]
+        transition-colors duration-300
+      ">
+              {/* Left: Rows per page */}
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600">Rows per page:</span>
+                <span className="text-[var(--card-foreground)] font-medium">Rows per page:</span>
                 <select
                   value={table.getState().pagination.pageSize}
                   onChange={(e) => table.setPageSize(Number(e.target.value))}
-                  className="px-3 py-1 rounded-lg border border-gray-300 
-                     bg-gray-50 hover:bg-gray-100 text-sm 
-                     focus:ring-2 focus:ring-blue-400 outline-none transition"
+                  className="
+              px-3 py-1 rounded-lg border border-[var(--border)]
+              bg-[var(--card)] text-[var(--card-foreground)]
+              focus:outline-none focus:ring-2 focus:ring-[var(--ring)]
+              transition-all duration-300
+            "
                 >
                   {[5, 10, 20, 50].map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
+                    <option key={size} value={size}>{size}</option>
                   ))}
                 </select>
               </div>
+
+              {/* Right: Pagination */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => table.setPageIndex(Math.max(table.getState().pagination.pageIndex - 1, 0))}
+                  disabled={table.getState().pagination.pageIndex === 0}
+                  className={`px-3 py-1 rounded-lg font-medium transition-all duration-300 shadow-sm ${table.getState().pagination.pageIndex === 0
+                    ? "bg-[var(--color-gray)] text-[var(--color-text-secondary)] cursor-not-allowed"
+                    : "bg-[var(--color-accent-teal-light)] dark:bg-[var(--color-accent-teal-dark)] hover:brightness-110 text-[var(--color-text-inverted)]"
+                    }`}
+                >
+                  Prev
+                </button>
+                <span className="text-[var(--card-foreground)] font-medium">
+                  Page <span className="font-semibold">{table.getState().pagination.pageIndex + 1}</span> of{' '}
+                  <span className="font-semibold">{table.getPageCount()}</span>
+                </span>
+                <button
+                  onClick={() => table.setPageIndex(Math.min(table.getState().pagination.pageIndex + 1, table.getPageCount() - 1))}
+                  disabled={table.getState().pagination.pageIndex === table.getPageCount() - 1}
+                  className={`px-3 py-1 rounded-lg font-medium transition-all duration-300 shadow-sm ${table.getState().pagination.pageIndex === table.getPageCount() - 1
+                    ? "bg-[var(--color-gray)] text-[var(--color-text-secondary)] cursor-not-allowed"
+                    : "bg-[var(--color-primary-blue-light)] dark:bg-[var(--color-primary-blue-dark)] hover:brightness-110 text-[var(--color-text-inverted)]"
+                    }`}
+                >
+                  Next
+                </button>
+              </div>
             </div>
+          )}
+        />
+      </div>
 
-            {/* Right group: Pagination */}
-            <div className="flex items-center gap-4 justify-center md:justify-end text-sm w-full md:w-auto">
-              {/* Prev Button */}
-              <button
-                onClick={() =>
-                  table.setPageIndex(Math.max(table.getState().pagination.pageIndex - 1, 0))
-                }
-                disabled={table.getState().pagination.pageIndex === 0}
-                className={`px-2 py-1 rounded-lg font-medium transition
-          ${table.getState().pagination.pageIndex === 0
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-orange-500 text-white hover:bg-orange-600 shadow-sm"}`}
-              >
-                Prev
-              </button>
 
-              {/* Page Info */}
-              <span className="text-gray-700">
-                Page <span className="font-medium">{table.getState().pagination.pageIndex + 1}</span>
-                of <span className="font-medium">{table.getPageCount()}</span>
-              </span>
-
-              {/* Next Button */}
-              <button
-                onClick={() =>
-                  table.setPageIndex(
-                    Math.min(
-                      table.getState().pagination.pageIndex + 1,
-                      table.getPageCount() - 1
-                    )
-                  )
-                }
-                disabled={table.getState().pagination.pageIndex === table.getPageCount() - 1}
-                className={`px-2 py-1 rounded-lg font-medium transition
-          ${table.getState().pagination.pageIndex === table.getPageCount() - 1
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-green-500 text-white hover:bg-green-600 shadow-sm"}`}
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
-      />
       {/* Confirm Modal */}
       <Modal isOpen={showConfirmModal} onClose={() => setShowConfirmModal(false)} title="Confirm Action">
         <p>{getActionMessage()}</p>
@@ -836,10 +1050,20 @@ const Invitations = () => {
             <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={handleSendInvitations}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                className="
+    px-4 py-2
+    rounded-md cursor-pointer
+    bg-[var(--btn)]
+    text-[var(--btn-foreground)]
+    hover:bg-[var(--btn-hover)]
+    hover:text-white
+    transition-colors duration-300
+    font-medium
+  "
               >
                 Send Invitations
               </button>
+
               <button
                 onClick={() => setShowImportModal(false)}
                 className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition"
@@ -871,7 +1095,7 @@ const Invitations = () => {
               <input
                 type="text"
                 value={formData[field.key as keyof typeof formData]}
-                ref={(el:any) => (errorRefs.current[field.key] = el)}
+                ref={(el: any) => (errorRefs.current[field.key] = el)}
                 onChange={e => handleChange(field.key, e.target.value)}
                 className={`border rounded-md px-2 py-1 focus:outline-none focus:ring-1
                   ${errors[field.key] ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-400'}`}
@@ -886,19 +1110,37 @@ const Invitations = () => {
         <div className="flex justify-end gap-2 mt-4">
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            className="
+    px-4 py-2 
+    rounded-md 
+    bg-[var(--btn)] 
+    text-[var(--btn-foreground)] 
+    hover:bg-[var(--btn-hover)] 
+    transition-colors duration-300 
+    font-medium
+  "
           >
             Send
           </button>
+
           <button
             onClick={() => setShowModal(false)}
-            className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition"
+            className="
+    px-4 py-2
+    rounded-md
+    bg-[var(--btn-cancel)]
+    text-[var(--btn-cancel-foreground)]
+    hover:bg-[var(--btn-cancel-hover)]
+    transition-colors duration-300
+    font-medium
+  "
           >
             Cancel
           </button>
+
         </div>
       </Modal>
-    </div>
+    </div >
   );
 };
 

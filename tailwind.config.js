@@ -1,57 +1,49 @@
+// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
-export default {
-  darkMode: 'class', // toggle with <html class="dark">
+module.exports = {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}", // your source files
+  ],
+  darkMode: 'class', // enables .dark class toggling
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: '#2563eb',
-          light: '#60a5fa',
-          dark: '#1e40af',
-        },
-        secondary: {
-          DEFAULT: '#0ea5e9',
-          light: '#38bdf8',
-          dark: '#0369a1',
-        },
-        success: {
-          DEFAULT: '#22c55e',
-          dark: '#15803d',
-        },
-        danger: {
-          DEFAULT: '#ef4444',
-          dark: '#b91c1c',
-        },
-        warning: {
-          DEFAULT: '#f59e0b',
-          dark: '#b45309',
-        },
-        background: {
-          light: '#f9fafb',
-          dark: '#0f172a',
-        },
-        surface: {
-          light: '#ffffff',
-          dark: '#1e293b',
-        },
-        text: {
-          light: '#1e293b',
-          dark: '#f8fafc',
-        },
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        card: "var(--card)",
+        "card-foreground": "var(--card-foreground)",
+        popover: "var(--popover)",
+        "popover-foreground": "var(--popover-foreground)",
+        primary: "var(--primary)",
+        "primary-foreground": "var(--primary-foreground)",
+        secondary: "var(--secondary)",
+        "secondary-foreground": "var(--secondary-foreground)",
+        muted: "var(--muted)",
+        "muted-foreground": "var(--muted-foreground)",
+        accent: "var(--accent)",
+        "accent-foreground": "var(--accent-foreground)",
+        destructive: "var(--destructive)",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        sidebar: "var(--sidebar)",
+        "sidebar-foreground": "var(--sidebar-foreground)",
+        "sidebar-primary": "var(--sidebar-primary)",
+        "sidebar-primary-foreground": "var(--sidebar-primary-foreground)",
+        "sidebar-accent": "var(--sidebar-accent)",
+        "sidebar-accent-foreground": "var(--sidebar-accent-foreground)",
+        "sidebar-border": "var(--sidebar-border)",
+        "sidebar-ring": "var(--sidebar-ring)",
+        chart1: "var(--chart-1)",
+        chart2: "var(--chart-2)",
+        chart3: "var(--chart-3)",
+        chart4: "var(--chart-4)",
+        chart5: "var(--chart-5)",
       },
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-      },
-      boxShadow: {
-        sm: '0 1px 2px rgba(0,0,0,0.05)',
-        md: '0 4px 6px rgba(0,0,0,0.1)',
-        lg: '0 10px 15px rgba(0,0,0,0.15)',
+      borderRadius: {
+        DEFAULT: "var(--radius)",
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/aspect-ratio'),
-  ],
+  plugins: [],
 };

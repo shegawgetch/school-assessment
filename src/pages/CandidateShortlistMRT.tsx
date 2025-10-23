@@ -135,15 +135,37 @@ export default function CandidateShortlistMRT() {
     { accessorKey: 'Candidate Name', header: 'Candidate Name' },
     { accessorKey: 'Email', header: 'Email' },
     { accessorKey: 'Field of Study', header: 'Field of Study' },
-    { accessorKey: 'CGPA', header: 'CGPA' },
+    {
+      accessorKey: 'CGPA', header: 'CGPA', size: 25,
+      Cell: ({ cell }: any) => (
+        <div className="text-center">
+          {cell.getValue()}
+        </div>
+      ),
+    },
     {
       accessorKey: 'Skills',
       header: 'Skills',
       Cell: ({ cell }: any) => (Array.isArray(cell.getValue()) ? cell.getValue().join(', ') : '-'),
     },
-    { accessorKey: 'Job Description Match (%)', header: 'Job Match (%)' },
-    { accessorKey: 'Strength', header: 'Strength' },
-    { accessorKey: 'Experience', header: 'Experience (Years)' },
+    {
+      accessorKey: 'Job Description Match (%)', header: 'Job Match (%)', size: 20,
+      Cell: ({ cell }: any) => (
+        <div className="text-center">
+          {cell.getValue()}%
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'Strength', header: 'Strength', size: 20, // preferred width in pixels
+      minSize: 20,
+      maxSize: 50,
+    },
+    {
+      accessorKey: 'Experience', header: 'Experience (Years)', size: 20, // preferred width in pixels
+      minSize: 20,
+      maxSize: 50,
+    },
   ], []);
 
   // --- Export Selected Rows ---
@@ -213,13 +235,18 @@ export default function CandidateShortlistMRT() {
       // height: '100vh', // full viewport minus header
       display: 'flex',
       flexDirection: 'column',
-    }}>
+    }} className="space-y-2 min-h-screen flex flex-col p-0 
+   p-0 bg-[var(--secondary)] dark:bg-[var(--background)]
+    text-[var(--color-text-primary)] dark:text-[var(--color-text-inverted)]
+    transition-colors duration-300 mb-0 pb-0
+  "
+    >
       {/* Top right download button */}
-      <Box ref={headerRef} className="w-full px-2 sm:px-4 md:px-6">
+      <Box ref={headerRef} className="w-full px-2 sm:px-4 md:px-6  mb-0">
         {/* Header Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-2 mt-0">
           {/* Page Title */}
-          <p className="font-semibold text-gray-700 text-base sm:text-sm md:text-md lg:text-xl">
+          <p className="text-[var(--foreground)] dark:text-[var(--foreground)] leading-tight font-semibold text-base md:text-lg">
             Candidate Shortlisting Page
           </p>
 
@@ -227,9 +254,23 @@ export default function CandidateShortlistMRT() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:justify-end gap-2 sm:gap-3 md:gap-4">
             {/* Send Invitation */}
             <Button
-              variant="outlined"
-              color="secondary"
-              className="w-full md:w-auto flex items-center justify-center gap-2 rounded-xl normal-case px-4 sm:px-3 py-1 sm:py-.5 font-semibold transition-all duration-200 shadow-sm hover:shadow-lg hover:bg-gray-50"
+              variant="contained"
+              className="
+    bg-[var(--primary)] 
+    dark:bg-[var(--primary)] 
+    text-[var(--primary-foreground)] 
+    dark:text-[var(--primary-foreground)] 
+    px-4 py-2 rounded-lg 
+    shadow-md 
+    font-semibold 
+    flex items-center gap-2 
+    transition-all duration-300 ease-in-out
+    hover:bg-[oklch(0.25 0.05 0)] 
+    dark:hover:bg-[oklch(0.35 0.05 0)] 
+    hover:scale-105 
+    focus:outline-none focus:ring-2 
+    focus:ring-[var(--primary)] focus:ring-opacity-50
+  "
               sx={{ textTransform: 'none' }}
               startIcon={<ArrowUpTrayIcon className="h-4 sm:h-5 w-4 sm:w-5 text-secondary-600" />}
               onClick={async () => {
@@ -267,9 +308,24 @@ export default function CandidateShortlistMRT() {
             {/* Download Selected */}
             <Button
               variant="contained"
-              color="primary"
-              className="w-full md:w-auto flex items-center justify-center gap-2 rounded-xl normal-case px-4 sm:px-3 py-1 sm:py-.5 font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-600"
-              sx={{ textTransform: 'none' }}
+              // color="primary"
+              className="
+    bg-[var(--secondary)] 
+    dark:bg-[var(--secondary)] 
+    text-[var(--secondary-foreground)] 
+    dark:text-[var(--secondary-foreground)] 
+    px-4 py-2 rounded-lg 
+    shadow-md 
+    font-semibold 
+    flex items-center gap-2 
+    transition-all duration-300 ease-in-out
+    hover:bg-[oklch(0.85 0.05 0)] 
+    dark:hover:bg-[oklch(0.3 0.05 0)] 
+    hover:scale-105 
+    focus:outline-none focus:ring-2 
+    focus:ring-[var(--secondary)] focus:ring-opacity-50
+  "
+              sx={{ textTransform: 'none', backgroundColor: '#10B981' }}
               startIcon={<ArrowDownTrayIcon className="h-4 sm:h-5 w-4 sm:w-5 text-white" />}
               onClick={handleExportSelected}
             >
@@ -280,7 +336,12 @@ export default function CandidateShortlistMRT() {
       </Box>
 
       {/* Filter */}
-      <Box ref={filterRef} className="w-full mb-0 m-0  px-2 sm:px-0 p:0"
+      <Box ref={filterRef} className="w-full mb-0flex flex-wrap justify-end items-center gap-4
+      bg-[var(--card)] dark:bg-[var(--card)]
+      border border-[var(--color-border-light)] dark:border-[var(--color-border-dark)]
+      rounded-lg shadow-sm px-4 py-2
+      transition-colors duration-300 mb-1
+    "
       >
 
         <CandidateFilter filters={filters} setFilters={setFilters} candidates={candidates} />
@@ -288,163 +349,313 @@ export default function CandidateShortlistMRT() {
 
       <GlobalStyles
         styles={{
-          "thead.MuiTableHead-root": {
+          "& .MuiTableHead-root": {
             position: "sticky",
-            top: 0, // height of custom toolbar in px
-            zIndex: 2,
-            backgroundColor: "white",
+            top: 0,
+            zIndex: 1000,
+            backgroundColor: "var(--color-surface-light)",
+            color: "var(--color-text-primary)",
           },
         }}
       />
-      <MaterialReactTable
-        columns={columns}
-        data={candidatesWithId}
-        enableRowSelection               // enable selection
-        enableMultiRowSelection          // allow multiple selection
-        enableColumnFilters={false}
-        enableGlobalFilter={false}
-        enableSelectAll={false} // removes header checkbox
-        // enableRowSelectionOnClick
-        positionActionsColumn="first"
-        rowNumberDisplayMode="static"
-        enablePagination
-        enableTopToolbar
-        enableBottomToolbar={true}
-        state={{
-          rowSelection,
-          pagination,
-          //isLoading: loading, // ✅ built-in spinner
-        }}
-        muiTablePaperProps={{
-          component: Box, // 👈 turns MRT’s root Paper into a Box
-          className: "shadow-md rounded-lg border border-gray-200", // Tailwind styles
-          sx: {
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-          },
-        }}
-        muiTableContainerProps={{
-          sx: {
-            maxHeight: tableMaxHeight,
-            overflowY: "auto",
-            overflowX: "auto",
-            position: "relative", // important for sticky children
+      <div
+        className="p-0 min-h-screen transition-colors duration-300 rounded-xl mb-0
+    "
+      >
+        <MaterialReactTable
+          columns={columns}
+          data={candidatesWithId}
+          enableRowSelection               // enable selection
+          enableMultiRowSelection          // allow multiple selection
+          enableColumnFilters={false}
+          enableGlobalFilter={false}
+          enableSelectAll={false} // removes header checkbox
+          // enableRowSelectionOnClick
+          positionActionsColumn="first"
+          rowNumberDisplayMode="static"
+          enablePagination
+          //enableTopToolbar
+          enableBottomToolbar={true}
+          state={{
+            rowSelection,
+            pagination,
+            //isLoading: loading, // ✅ built-in spinner
+          }}
+          muiTablePaperProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              border: '2px solid var(--border)',
+              borderRadius: '12px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease-in-out',
+            },
+          }}
+          muiTableContainerProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              maxHeight: tableMaxHeight,
+              overflowY: 'auto',
+              overflowX: 'auto',
+              transition: 'all 0.3s ease-in-out',
+            },
+          }}
+          // Table
+          muiTableProps={{
+            stickyHeader: true,
+            sx: {
+              tableLayout: 'auto',
+              minWidth: '700px',
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              borderCollapse: 'separate', // ensures row borders visible
+              borderSpacing: '0 4px', // spacing between rows
+              transition: 'all 0.3s ease-in-out',
+            },
+          }}
+          muiTableBodyCellProps={{
+            sx: {
+              padding: 0,
+              pl: 1,
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              borderBottom: '1px solid var(--border)',
+              '& .MuiCheckbox-root': {
+                color: 'var(--primary) !important', // unchecked checkbox color
+              },
+              '& .Mui-checked': {
+                color: 'var(--destructive) !important', // checked color (attractive red)
+              },
+            },
+          }}
+          muiTableHeadCellProps={{
+            sx: {
+              position:'sticky',
+              padding: 0,
+              pl: 1,
+              bgcolor: 'var(--secondary)',
+              color: 'var(--secondary-foreground)',
+              fontWeight: 600,
+              borderBottom: '2px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+              '& .MuiSvgIcon-root': {
+                color: 'var(--secondary-foreground) !important', // fixes sort icon color
+              },
+              '& .MuiTableSortLabel-root': {
+                color: 'var(--secondary-foreground) !important',
+                '&:hover': {
+                  color: 'var(--primary)',
+                },
+                '& .MuiTableSortLabel-icon': {
+                  color: 'var(--secondary-foreground) !important', // ensures sort icon visible
+                },
+              },
+              '& .MuiMenuItem-root, & .MuiMenuItem-icon': {
+                color: 'var(--card-foreground) !important', // fixes three-dot menu icon
+              },
+            },
+          }}
 
 
-          },
+          // Table body rows
+          muiTableBodyRowProps={{
+            sx: {
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              transition: 'background-color 0.3s ease-in-out',
+              '&:hover': {
+                bgcolor: 'var(--muted)',
+              },
+            },
+          }}
+          // Top Toolbar dark/light mode
+          /*  muiTopToolbarProps={{
+              sx: {
+                bgcolor: 'var(--card)',
+                color: 'var(--card-foreground)',
+                borderBottom: '2px solid var(--border)',
+                transition: 'all 0.3s ease-in-out',
+                '& .MuiButton-root, & .MuiInputBase-root': {
+                  color: 'var(--card-foreground)',
+                },
+              },
+            }}*/
 
-        }}
-        muiTableProps={{
-          stickyHeader: true, // <- this helps MUI Table
-          sx: {
-            tableLayout: "auto",
-            minWidth: "700px",
-          },
-        }}
-        muiTableHeadCellProps={{
-          sx: {
-            position: "sticky",
-            top: 0, // same as thead.MuiTableHead-root
-            zIndex: 3,
-            backgroundColor: "white",
-          },
-        }}
-        muiTableBodyRowProps={({ row }) => ({
-          onClick: (e) => {
-            // prevent modal if user clicks checkbox
-            if ((e.target as HTMLElement).closest('input[type="checkbox"]')) return;
-            setSelectedCandidate(row.original); // open modal with row data
-          },
-          sx: { cursor: 'pointer', wordBreak: 'break-word' },
-        })}
-        onPaginationChange={setPagination} // built-in pagination
-        onRowSelectionChange={setRowSelection}
-        getRowId={(row) => row.id.toString()}
-        onRowClick={(row) => setSelectedCandidate(filteredCandidates[row.index])}
-        renderTopToolbarCustomActions={({ table }) => (
-          <div
-            className="sticky top-0 z-20 p-1 
+          // Bottom Pagination Toolbar dark/light mod
+          // ✅ Top toolbar (search/filter)
+          muiTopToolbarProps={{
+            sx: {
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              borderBottom: '1.5px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+              padding: '0px',
+              paddingX: '10px',
+              '& .MuiButton-root, & .MuiInputBase-root, & .MuiIconButton-root': {
+                color: 'var(--card-foreground)',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border)',
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--ring)',
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--ring)',
+              },
+            },
+          }}
+          muiToolbarAlertBannerProps={{
+            sx: {
+              my: 0,             // remove vertical margin
+              py: 0,           // reduce top & bottom padding
+              minHeight: '28px', // compact height
+              maxHeight: '45px', // compact height
+
+              fontSize: '0.8rem',// smaller “1 of 50 row(s) selected” text
+              bgcolor: 'var(--card)',
+              color: 'var(--card-foreground)',
+              borderBottom: '1px solid var(--border)',
+            },
+          }}
+
+
+          // ✅ Bottom toolbar (pagination)
+          muiBottomToolbarProps={{
+            sx: {
+              bgcolor: 'var(--se)',
+              color: 'var(--card-foreground)',
+              borderTop: '1.5px solid var(--border)',
+              transition: 'all 0.3s ease-in-out',
+              paddingY: '6px',
+              '& .MuiButtonBase-root, & .MuiSvgIcon-root, & .MuiTypography-root': {
+                color: 'var(--card-foreground)',
+              },
+              '& .Mui-disabled': {
+                color: 'var(--muted-foreground)',
+              },
+            },
+          }}
+
+          // ✅ Pagination select & icons
+          muiTablePaginationProps={{
+            SelectProps: {
+              sx: {
+                bgcolor: 'var(--card)',
+                color: 'var(--card-foreground)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                '&:hover': {
+                  borderColor: 'var(--ring)',
+                },
+              },
+            },
+            IconButtonProps: {
+              sx: {
+                color: 'var(--card-foreground)',
+                '&:hover': {
+                  color: 'var(--primary)',
+                },
+              },
+            },
+          }}
+
+          onPaginationChange={setPagination} // built-in pagination
+          onRowSelectionChange={setRowSelection}
+          getRowId={(row) => row.id.toString()}
+          //onRowClick={(row:any) => setSelectedCandidate(filteredCandidates[row.index])}
+          renderTopToolbarCustomActions={({ table }) => (
+            <div
+              className="sticky top-0 z-20 p-1 
                flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-          >
-            {/* Left group: Select All + Rows per page */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              {/* Select All / Deselect All */}
-              <button
-                onClick={() => table.toggleAllRowsSelected()}
-                className={`px-4 py-1 rounded-lg font-medium transition
+            >
+              {/* Left group: Select All + Rows per page */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                {/* Select All / Deselect All */}
+                <button
+                  onClick={() => table.toggleAllRowsSelected()}
+                  className={`px-4 py-1 rounded-lg font-medium transition
           ${table.getIsAllRowsSelected()
-                    ? "bg-red-500 hover:bg-red-600 text-white shadow-sm"
-                    : "bg-blue-500 hover:bg-blue-600 text-white shadow-sm"}`}
-              >
-                {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
-              </button>
-
-              {/* Rows per page */}
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600">Rows per page:</span>
-                <select
-                  value={table.getState().pagination.pageSize}
-                  onChange={(e) => table.setPageSize(Number(e.target.value))}
-                  className="px-3 py-1 rounded-lg border border-gray-300 
-                     bg-gray-50 hover:bg-gray-100 text-sm 
-                     focus:ring-2 focus:ring-blue-400 outline-none transition"
+                      ? "bg-[var(--color-error-light)] dark:bg-[var(--color-error-dark)] hover:brightness-110 text-[var(--color-text-inverted)]"
+                      : "bg-[var(--color-primary-blue-light)] dark:bg-[var(--color-primary-blue-dark)] hover:brightness-110 text-[var(--color-text-inverted)]"}`}
                 >
-                  {[5, 10, 20, 50].map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
+                  {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
+                </button>
+
+                {/* Rows per page */}
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-[var(--foreground)] dark:text-[var(--foreground)] font-medium">Rows per page:</span>
+                  <select
+                    value={table.getState().pagination.pageSize}
+                    onChange={(e) => table.setPageSize(Number(e.target.value))}
+                    className="
+            px-3 py-1 rounded-lg border 
+            border-[var(--color-border-light)] dark:border-[var(--color-border-dark)] 
+            bg-[var(--color-surface-light)] dark:bg-[var(--color-surface-dark)]
+            text-[var(--color-text-primary)] dark:text-[var(--color-text-inverted)]
+            focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-blue-light)] dark:focus:ring-[var(--color-primary-blue-dark)]
+            transition-all duration-300
+          "
+                  >
+                    {[5, 10, 20, 50].map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Right group: Pagination */}
+              <div className="flex items-center gap-4 justify-center md:justify-end text-sm w-full md:w-auto">
+                {/* Prev Button */}
+                <button
+                  onClick={() =>
+                    table.setPageIndex(Math.max(table.getState().pagination.pageIndex - 1, 0))
+                  }
+                  disabled={table.getState().pagination.pageIndex === 0}
+                  className={`px-2 py-1 rounded-lg font-medium transition
+          ${table.getState().pagination.pageIndex === 0
+                      ? "bg-[var(--color-gray)] text-[var(--color-text-secondary)] cursor-not-allowed"
+                      : "bg-[var(--color-accent-teal-light)] dark:bg-[var(--color-accent-teal-dark)] hover:brightness-110 text-[var(--color-text-inverted)]"}`}
+                >
+                  Prev
+                </button>
+
+                {/* Page Info */}
+                <span className="text-[var(--foreground)] dark:text-[var(--foreground)] font-medium">
+                  Page <span className="font-semibold">{table.getState().pagination.pageIndex + 1}</span>
+                  {' '}of <span className="font-medium">{table.getPageCount()}</span>
+                </span>
+
+                {/* Next Button */}
+                <button
+                  onClick={() =>
+                    table.setPageIndex(
+                      Math.min(
+                        table.getState().pagination.pageIndex + 1,
+                        table.getPageCount() - 1
+                      )
+                    )
+                  }
+                  disabled={table.getState().pagination.pageIndex === table.getPageCount() - 1}
+                  className={`px-2 py-1 rounded-lg font-medium transition
+          ${table.getState().pagination.pageIndex === table.getPageCount() - 1
+                      ? "bg-[var(--color-gray)] text-[var(--color-text-secondary)] cursor-not-allowed"
+                      : "bg-[var(--color-primary-blue-light)] dark:bg-[var(--color-primary-blue-dark)] hover:brightness-110 text-[var(--color-text-inverted)]"}`}
+                >
+                  Next
+                </button>
               </div>
             </div>
-
-            {/* Right group: Pagination */}
-            <div className="flex items-center gap-4 justify-center md:justify-end text-sm w-full md:w-auto">
-              {/* Prev Button */}
-              <button
-                onClick={() =>
-                  table.setPageIndex(Math.max(table.getState().pagination.pageIndex - 1, 0))
-                }
-                disabled={table.getState().pagination.pageIndex === 0}
-                className={`px-2 py-1 rounded-lg font-medium transition
-          ${table.getState().pagination.pageIndex === 0
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-orange-500 text-white hover:bg-orange-600 shadow-sm"}`}
-              >
-                Prev
-              </button>
-
-              {/* Page Info */}
-              <span className="text-gray-700">
-                Page <span className="font-medium">{table.getState().pagination.pageIndex + 1}</span>
-                of <span className="font-medium">{table.getPageCount()}</span>
-              </span>
-
-              {/* Next Button */}
-              <button
-                onClick={() =>
-                  table.setPageIndex(
-                    Math.min(
-                      table.getState().pagination.pageIndex + 1,
-                      table.getPageCount() - 1
-                    )
-                  )
-                }
-                disabled={table.getState().pagination.pageIndex === table.getPageCount() - 1}
-                className={`px-2 py-1 rounded-lg font-medium transition
-          ${table.getState().pagination.pageIndex === table.getPageCount() - 1
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-green-500 text-white hover:bg-green-600 shadow-sm"}`}
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
+          )}
 
 
-      />
+        />
+      </div>
 
       {selectedCandidate && (
         <CandidateModal candidate={selectedCandidate} onClose={() => setSelectedCandidate(null)} />
